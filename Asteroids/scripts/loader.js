@@ -1,6 +1,7 @@
 //various parts of this code barrowed from Dean Mathias' class examples
-var COINGAME = {
+var ASTEROIDS = {
 	images : {},
+	screens : {},
 
 	status : {
 		preloadRequest : 0,
@@ -20,27 +21,18 @@ window.addEventListener('load', function() {
 	Modernizr.load([
 		{
 			load : [
-                                'preaload!scripts/graphics.js',
-                                'preload!scripts/random.js',
-                                'preload!scripts/coinDropSystem.js',
-                                'preload!scripts/particleSystem.js',
-                                'preload!scripts/textures.js',
-                                'preload!scripts/countdown.js',
-				'preload!scripts/input.js',
-				'preload!scripts/open.js',
-				'preload!images/Background.png',
-                                'preload!images/Piggy-Bank.png',
-                                'preload!images/Dollar-Sign.png',
-                                'preload!images/Coin-US-Dollary.png',
-                                'preload!images/Coin-Roman.png',
-                                'preload!images/Coin-Canadian-Dollar.png',
-                                'preload!images/Clock.png',
-                                'preload!images/green-start-button.png',  //this image is from http://www.clker.com/clipart-another-green-start-button.html
-                                'preload!images/credits_button.jpg',
-                                'preload!scripts/coins.js',
-                                'preload!scripts/levelOne.js',
-                                'preload!scripts/levelTwo.js',
-                                'preload!scripts/levelThree.js'
+			        'preload!scripts/renderer.js',
+                    'preload!scripts/input.js',
+			        'preload!scripts/mainmenu.js',
+			        'preload!scripts/game.js',
+                    'preload!scripts/screens.js',
+			        'preload!scripts/credits.js',
+			        'preload!scripts/gameplay.js',
+			        'preload!scripts/help.js',
+			        'preload!scripts/highscores.js',
+                    'preload!scripts/credits.js',
+			        'preload!scripts/random.js',
+                    'preload!images/Background.png',
 			],
 			complete : function() {
 				console.log('All files requested for loading...');
@@ -57,22 +49,22 @@ window.addEventListener('load', function() {
 yepnope.addPrefix('preload', function(resource) {
 	console.log('preloading: ' + resource.url);
 	
-	COINGAME.status.preloadRequest += 1;
+	ASTEROIDS.status.preloadRequest += 1;
 	var isImage = /.+\.(jpg|png|gif)$/i.test(resource.url);
 	resource.noexec = isImage;
 	resource.autoCallback = function(e) {
 		if (isImage) {
 			var image = new Image();
 			image.src = resource.url;
-			COINGAME.images[resource.url] = image;
+			ASTEROIDS.images[resource.url] = image;
 		}
-		COINGAME.status.preloadComplete += 1;
+		ASTEROIDS.status.preloadComplete += 1;
 		
 		//
 		// When everything has finished preloading, go ahead and start the game
-		if (COINGAME.status.preloadComplete === COINGAME.status.preloadRequest) {
+		if (ASTEROIDS.status.preloadComplete === ASTEROIDS.status.preloadRequest) {
 			console.log('Preloading complete!');
-			COINGAME.initialize();
+			ASTEROIDS.game.initialize();
 		}
 	};
 	
