@@ -18,7 +18,9 @@ ASTEROIDS.screens['game-play'] = (function() {
 			width : 100, height : 100,
 			rotation : 0,
 			moveRate : 200,			// pixels per second
-			rotateRate : 3.14159	// Radians per second
+			rotateRate : 3.14159,	// Radians per second
+			dx : 0,
+			dy : 0
 		});
 
 		//
@@ -29,6 +31,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_S, myTexture.moveDown);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_Q, myTexture.rotateLeft);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_E, myTexture.rotateRight);
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_SPACE, myTexture.moveForward);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function() {
 			//
 			// Stop the game loop by canceling the request for the next animation frame

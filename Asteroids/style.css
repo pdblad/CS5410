@@ -3,33 +3,6 @@
     Author     : Scott Olson
 */
 
-/* #mainCanvas
-{
-    background:url("images/Background.png");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-    display: inline;
-    position: relative;
-}
-
- #canvasDiv
-{
-    width: 100%;
-    text-align:center;
-}
-
-#game-play
-{
-	text-align: center;
-}
-
-#canvas-main
-{
-	background:url("images/Background.png") no-repeat center center fixed;
-	background-size: cover;
-} */
-
 body
 {
 	background-image:url("images/Background.png");
