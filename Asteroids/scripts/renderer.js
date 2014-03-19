@@ -1,3 +1,10 @@
+/*jslint browser: true, white: true */
+/*global CanvasRenderingContext2D, ASTEROIDS */
+// ------------------------------------------------------------------
+//
+//
+// ------------------------------------------------------------------
+
 ASTEROIDS.graphics = (function() {
 	'use strict';
 	
@@ -20,7 +27,7 @@ ASTEROIDS.graphics = (function() {
 	
 	function Texture(spec) {
 		var that = {};
-				
+		
 		that.rotateRight = function(elapsedTime) {
 			spec.rotation += spec.rotateRate * (elapsedTime / 1000);
 		};
@@ -69,77 +76,8 @@ ASTEROIDS.graphics = (function() {
 	}
 	
 
-	function Text(spec) {
-		var that = {};
-		
-		//------------------------------------------------------------------
-		//
-		// This returns the height of the specified font, in pixels.
-		//
-		//------------------------------------------------------------------
-		function measureTextHeight(spec) {
-			context.save();
-			
-			context.font = spec.font;
-			context.fillStyle = spec.fill;
-			context.strokeStyle = spec.stroke;
-			
-			var height = context.measureText('m').width;
-			
-			context.restore();
-			
-			return height;
-		}
-		
-		//------------------------------------------------------------------
-		//
-		// This returns the width of the specified font, in pixels.
-		//
-		//------------------------------------------------------------------
-		function measureTextWidth(spec) {
-			context.save();
-			
-			context.font = spec.font;
-			context.fillStyle = spec.fill;
-			context.strokeStyle = spec.stroke;
-			
-			var width = context.measureText(spec.text).width;
-			
-			context.restore();
-			
-			return width;
-		}
-
-		that.textDraw = function() {
-			context.save();
-			
-			context.font = spec.font;
-			context.fillStyle = spec.fill;
-			context.strokeStyle = spec.stroke;
-			context.textBaseline = 'top';
-
-			context.translate(spec.pos.x + that.width / 2, spec.pos.y + that.height / 2);
-			context.rotate(spec.rotation);
-			context.translate(-(spec.pos.x + that.width / 2), -(spec.pos.y + that.height / 2));
-
-			context.fillText(spec.text, spec.pos.x, spec.pos.y);
-			context.strokeText(spec.text, spec.pos.x, spec.pos.y);
-			
-			context.restore();
-		};
-
-		//
-		// Compute and expose some public properties for this text.
-		that.height = measureTextHeight(spec);
-		that.width = measureTextWidth(spec);
-		that.pos = spec.pos;
-
-		return that;
-	}
-
 	return {
 		clear : clear,
-		Texture : Texture,
-		Text : Text
+		Texture : Texture
 	};
 }());

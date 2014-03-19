@@ -1,4 +1,4 @@
-//various parts of this code barrowed from Dean Mathias' class examples
+//various parts of this code borrowed from Dean Mathias' class examples
 var ASTEROIDS = {
 	images : {},
 	screens : {},
