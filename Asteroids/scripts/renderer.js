@@ -28,6 +28,14 @@ ASTEROIDS.graphics = (function() {
 	function Texture(spec) {
 		var that = {};
 		
+		that.getX = function(){
+			return spec.center.x;
+		};
+		
+		that.getY = function(){
+			return spec.center.y;
+		};
+		
 		that.rotateRight = function(elapsedTime) {
 			spec.rotation += spec.rotateRate * (elapsedTime / 1000);
 		};

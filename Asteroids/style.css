@@ -6,7 +6,7 @@
 body
 {
 	background-image:url("images/Background.png");
-	background-repeat: no-repeat;
+	background-repeat: repeat;
 	background-size: cover;
 }
 

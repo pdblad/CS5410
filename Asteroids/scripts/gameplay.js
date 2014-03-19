@@ -7,6 +7,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		myMouse = ASTEROIDS.input.Mouse(),
 		myKeyboard = ASTEROIDS.input.Keyboard(),
 		myTexture = null,
+		particlesMissile = null,
 		cancelNextRequest = false;
 	
 	function initialize() {
@@ -14,7 +15,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 
 		myTexture = ASTEROIDS.graphics.Texture( {
 			image : ASTEROIDS.images['images/USU-Logo.png'],
-			center : { x : 100, y : 100 },
+			center : { x : 500, y : 500 },
 			width : 100, height : 100,
 			rotation : 0,
 			moveRate : 200,			// pixels per second
@@ -22,6 +23,15 @@ ASTEROIDS.screens['game-play'] = (function() {
 			dx : 0,
 			dy : 0
 		});
+		
+		particlesFire = particleSystem( {
+			image : ASTEROIDS.images['images/LaserShot.png'],
+			center: {x: 300, y: 300},
+			speed: {mean: 50, stdev: 25},
+			lifetime: {mean: 4, stdev: 1}
+			}, ASTEROIDS.graphics
+		);
+
 
 		//
 		// Create the keyboard input handler and register the keyboard commands
