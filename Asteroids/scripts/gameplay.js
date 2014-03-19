@@ -35,13 +35,9 @@ ASTEROIDS.screens['game-play'] = (function() {
 
 		//
 		// Create the keyboard input handler and register the keyboard commands
-		myKeyboard.registerCommand(KeyEvent.DOM_VK_A, myTexture.moveLeft);
-		myKeyboard.registerCommand(KeyEvent.DOM_VK_D, myTexture.moveRight);
-		myKeyboard.registerCommand(KeyEvent.DOM_VK_W, myTexture.moveUp);
-		myKeyboard.registerCommand(KeyEvent.DOM_VK_S, myTexture.moveDown);
-		myKeyboard.registerCommand(KeyEvent.DOM_VK_Q, myTexture.rotateLeft);
-		myKeyboard.registerCommand(KeyEvent.DOM_VK_E, myTexture.rotateRight);
-		myKeyboard.registerCommand(KeyEvent.DOM_VK_SPACE, myTexture.moveForward);
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_A, myTexture.rotateLeft);
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_D, myTexture.rotateRight);
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_S, myTexture.moveForward);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function() {
 			//
 			// Stop the game loop by canceling the request for the next animation frame
@@ -52,11 +48,10 @@ ASTEROIDS.screens['game-play'] = (function() {
 		});
 		
 		//
-		// Create an ability to move the logo using the mouse
+		// capture mouse events, not doing anything currently
 		myMouse = ASTEROIDS.input.Mouse();
 		myMouse.registerCommand('mousedown', function(e) {
 			mouseCapture = true;
-			myTexture.moveTo({x : e.clientX, y : e.clientY});
 		});
 
 		myMouse.registerCommand('mouseup', function() {
@@ -65,9 +60,22 @@ ASTEROIDS.screens['game-play'] = (function() {
 
 		myMouse.registerCommand('mousemove', function(e) {
 			if (mouseCapture) {
-				myTexture.moveTo({x : e.clientX, y : e.clientY});
 			}
 		});
+	}
+	
+	//This is the main update function where various frameworks can be updated
+	//
+	function gameUpdate(elapsedTime){
+		myKeyboard.update(elapsedTime);
+		myMouse.update(elapsedTime);
+	}
+	
+	//This is the main render function where various frameworks are rendered
+	//
+	function gameRender(elapsedTime){
+		ASTEROIDS.graphics.clear();
+		myTexture.draw();
 	}
 	
 	//------------------------------------------------------------------
@@ -79,11 +87,8 @@ ASTEROIDS.screens['game-play'] = (function() {
 		ASTEROIDS.elapsedTime = time - ASTEROIDS.lastTimeStamp;
 		ASTEROIDS.lastTimeStamp = time;
 
-		myKeyboard.update(ASTEROIDS.elapsedTime);
-		myMouse.update(ASTEROIDS.elapsedTime);
-
-		ASTEROIDS.graphics.clear();
-		myTexture.draw();
+		gameUpdate(ASTEROIDS.elapsedTime);
+		gameRender(ASTEROIDS.elapsedTime);		
 
 		if (!cancelNextRequest) {
 			requestAnimationFrame(gameLoop);
