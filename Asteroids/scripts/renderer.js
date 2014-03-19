@@ -52,6 +52,13 @@ ASTEROIDS.graphics = (function() {
 			spec.center.y += spec.moveRate * (elapsedTime / 1000);
 		};
 		
+		that.moveForward = function(elapsedTime){
+			spec.center.x += spec.dx;
+			spec.center.y += spec.dy;
+			spec.dx *= .98;
+			spec.dy *= .98;
+		};
+		
 		that.moveTo = function(center) {
 			spec.center = center;
 		};
