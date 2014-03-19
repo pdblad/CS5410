@@ -33,6 +33,7 @@ window.addEventListener('load', function() {
                     'preload!scripts/credits.js',
 			        'preload!scripts/random.js',
                     'preload!images/Background.png',
+                    'preload!images/USU-Logo.png'
 			],
 			complete : function() {
 				console.log('All files requested for loading...');
