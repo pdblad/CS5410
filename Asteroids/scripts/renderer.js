@@ -36,21 +36,21 @@ ASTEROIDS.graphics = (function() {
 			spec.rotation -= spec.rotateRate * (elapsedTime / 1000);
 		};
 		
-//		that.moveLeft = function(elapsedTime) {
-//			spec.center.x -= spec.moveRate * (elapsedTime / 1000);
-//		};
-//		
-//		that.moveRight = function(elapsedTime) {
-//			spec.center.x += spec.moveRate * (elapsedTime / 1000);
-//		};
-//		
-//		that.moveUp = function(elapsedTime) {
-//			spec.center.y -= spec.moveRate * (elapsedTime / 1000);
-//		};
-//		
-//		that.moveDown = function(elapsedTime) {
-//			spec.center.y += spec.moveRate * (elapsedTime / 1000);
-//		};
+		that.moveLeft = function(elapsedTime) {
+			spec.center.x -= spec.moveRate * (elapsedTime / 1000);
+		};
+		
+		that.moveRight = function(elapsedTime) {
+			spec.center.x += spec.moveRate * (elapsedTime / 1000);
+		};
+		
+		that.moveUp = function(elapsedTime) {
+			spec.center.y -= spec.moveRate * (elapsedTime / 1000);
+		};
+		
+		that.moveDown = function(elapsedTime) {
+			spec.center.y += spec.moveRate * (elapsedTime / 1000);
+		};
 		
 		that.moveForward = function(elapsedTime){
 			spec.center.x += spec.dx;
