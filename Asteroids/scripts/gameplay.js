@@ -7,7 +7,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		myMouse = ASTEROIDS.input.Mouse(),
 		myKeyboard = ASTEROIDS.input.Keyboard(),
 		ship = null,
-		particlesMissile = null,
+		missile = null,
 		cancelNextRequest = false;
 	
 	function initialize() {
@@ -20,6 +20,16 @@ ASTEROIDS.screens['game-play'] = (function() {
 			rotation : -3.14,
 			moveRate : 200,			// pixels per second
 			rotateRate : 3.14159,	// Radians per second
+			dx : 0,
+			dy : 0
+		});
+		
+		missile = ASTEROIDS.graphics.Texture( {
+			image : ASTEROIDS.images['images/LaserShot.png'],
+			center : { x : 450, y : 500 },
+			width : 50, height : 25,
+			rotation : -3.14,
+			speed : 500,
 			dx : 0,
 			dy : 0
 		});
@@ -38,6 +48,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_A, ship.rotateLeft);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_D, ship.rotateRight);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_S, ship.fireThrusters);
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_SPACE, missile.shoot);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function() {
 			//
 			// Stop the game loop by canceling the request for the next animation frame
@@ -70,6 +81,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		myKeyboard.update(elapsedTime);
 		myMouse.update(elapsedTime);
 		ship.updatePos();
+		missile.updatePos();
 	}
 	
 	//This is the main render function where various frameworks are rendered
@@ -77,6 +89,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 	function gameRender(elapsedTime){
 		ASTEROIDS.graphics.clear();
 		ship.draw();
+		missile.draw();
 	}
 	
 	//------------------------------------------------------------------

@@ -66,6 +66,11 @@ ASTEROIDS.graphics = (function() {
 	        spec.dy += Math.sin(spec.rotation) * 0.1;
 		};
 		
+		that.shoot = function(elapsedTime){
+			console.log("Shoot!");
+			spec.center.x -= spec.speed * (elapsedTime / 1000);
+		};
+		
 		that.updatePos = function(elapsedTime){
 			spec.center.x += spec.dx;
 			spec.center.y += spec.dy;
