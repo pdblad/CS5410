@@ -36,14 +36,6 @@ ASTEROIDS.graphics = (function() {
 			return spec.center.y;
 		};
 		
-		that.rotateRight = function(elapsedTime) {
-			spec.rotation += spec.rotateRate * (elapsedTime / 1000);
-		};
-		
-		that.rotateLeft = function(elapsedTime) {
-			spec.rotation -= spec.rotateRate * (elapsedTime / 1000);
-		};
-		
 		that.moveLeft = function(elapsedTime) {
 			spec.center.x -= spec.moveRate * (elapsedTime / 1000);
 		};
@@ -60,15 +52,26 @@ ASTEROIDS.graphics = (function() {
 			spec.center.y += spec.moveRate * (elapsedTime / 1000);
 		};
 		
-		that.moveForward = function(elapsedTime){
-			spec.dx += Math.sin(spec.rotateRate) * elapsedTime * 0.01;
-	        spec.dy += -Math.cos(spec.rotateRate) * elapsedTime * 0.01;
-
+		that.rotateRight = function(elapsedTime) {
+			spec.rotation += spec.rotateRate * (elapsedTime / 1000);
+		};
+		
+		that.rotateLeft = function(elapsedTime) {
+			spec.rotation -= spec.rotateRate * (elapsedTime / 1000);
+			console.log('Rotation: ' + spec.rotation);
+		};
+		
+		that.fireThrusters = function(elapsedTime){
+			spec.dx += Math.cos(spec.rotation) * 0.1;
+	        spec.dy += Math.sin(spec.rotation) * 0.1;
+		};
+		
+		that.updatePos = function(elapsedTime){
 			spec.center.x += spec.dx;
 			spec.center.y += spec.dy;
-			
-			spec.dx *= .98;
-			spec.dy *= .98;
+			//this is friction, uncomment if friction is wanted
+			//spec.dx *= .98;
+			//spec.dy *= .98;
 		};
 		
 		that.moveTo = function(center) {

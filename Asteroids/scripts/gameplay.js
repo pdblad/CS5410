@@ -6,38 +6,38 @@ ASTEROIDS.screens['game-play'] = (function() {
 	var mouseCapture = false,
 		myMouse = ASTEROIDS.input.Mouse(),
 		myKeyboard = ASTEROIDS.input.Keyboard(),
-		myTexture = null,
+		ship = null,
 		particlesMissile = null,
 		cancelNextRequest = false;
 	
 	function initialize() {
 		console.log('game initializing...');
 
-		myTexture = ASTEROIDS.graphics.Texture( {
+		ship = ASTEROIDS.graphics.Texture( {
 			image : ASTEROIDS.images['images/USU-Logo.png'],
 			center : { x : 500, y : 500 },
 			width : 100, height : 100,
-			rotation : 0,
+			rotation : -3.14,
 			moveRate : 200,			// pixels per second
 			rotateRate : 3.14159,	// Radians per second
 			dx : 0,
 			dy : 0
 		});
 		
-		particlesFire = particleSystem( {
+		/*particlesFire = particleSystem( {
 			image : ASTEROIDS.images['images/LaserShot.png'],
 			center: {x: 300, y: 300},
 			speed: {mean: 50, stdev: 25},
 			lifetime: {mean: 4, stdev: 1}
 			}, ASTEROIDS.graphics
-		);
+		);*/
 
 
 		//
 		// Create the keyboard input handler and register the keyboard commands
-		myKeyboard.registerCommand(KeyEvent.DOM_VK_A, myTexture.rotateLeft);
-		myKeyboard.registerCommand(KeyEvent.DOM_VK_D, myTexture.rotateRight);
-		myKeyboard.registerCommand(KeyEvent.DOM_VK_S, myTexture.moveForward);
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_A, ship.rotateLeft);
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_D, ship.rotateRight);
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_S, ship.fireThrusters);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function() {
 			//
 			// Stop the game loop by canceling the request for the next animation frame
@@ -69,13 +69,14 @@ ASTEROIDS.screens['game-play'] = (function() {
 	function gameUpdate(elapsedTime){
 		myKeyboard.update(elapsedTime);
 		myMouse.update(elapsedTime);
+		ship.updatePos();
 	}
 	
 	//This is the main render function where various frameworks are rendered
 	//
 	function gameRender(elapsedTime){
 		ASTEROIDS.graphics.clear();
-		myTexture.draw();
+		ship.draw();
 	}
 	
 	//------------------------------------------------------------------
