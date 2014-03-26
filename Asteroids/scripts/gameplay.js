@@ -10,6 +10,8 @@ ASTEROIDS.screens['game-play'] = (function() {
 		leftThruster = null,
 		rightThruster = null,
 		particlesMissile = null,
+
+		missile = null,
 		cancelNextRequest = false;
 	
 	function initialize() {
@@ -30,7 +32,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 			dx : 0,
 			dy : 0
 		});
-		
+
 		leftThruster = particleSystem({
 			image : ASTEROIDS.images['images/fire.png'],
 			center: {x: ship.rotation, y: ship.rotation},
@@ -48,6 +50,16 @@ ASTEROIDS.screens['game-play'] = (function() {
 		},
 			ASTEROIDS.graphics
 		);
+
+		missile = ASTEROIDS.graphics.Texture( {
+			image : ASTEROIDS.images['images/LaserShot.png'],
+			center : { x : 450, y : 500 },
+			width : 50, height : 25,
+			rotation : -3.14,
+			speed : 500,
+			dx : 0,
+			dy : 0
+		});
 		
 		/*particlesFire = particleSystem( {
 			image : ASTEROIDS.images['images/LaserShot.png'],
@@ -63,6 +75,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_A, ship.rotateLeft);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_D, ship.rotateRight);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_S, ship.fireThrusters);
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_SPACE, missile.shoot);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function() {
 			//
 			// Stop the game loop by canceling the request for the next animation frame
@@ -97,6 +110,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		ship.updatePos();
 		rightThruster.updatePos(ship.getDx()*(-1), ship.getDy()*(-1));
 		rightThruster.update(elapsedTime/1000);
+		missile.updatePos();
 	}
 	
 	//This is the main render function where various frameworks are rendered
@@ -107,6 +121,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		rightThruster.render();
 		rightThruster.create();
 		rightThruster.create();
+		missile.draw();
 	}
 	
 	//------------------------------------------------------------------
