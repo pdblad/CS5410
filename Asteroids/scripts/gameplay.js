@@ -8,6 +8,9 @@ ASTEROIDS.screens['game-play'] = (function() {
 		myKeyboard = ASTEROIDS.input.Keyboard(),
 		ship = null,
 		missile = null,
+		asteroid = null,
+		asteroidsArray = [],
+		count = 0,
 		cancelNextRequest = false;
 	
 	function initialize() {
@@ -33,6 +36,29 @@ ASTEROIDS.screens['game-play'] = (function() {
 			dx : 0,
 			dy : 0
 		});
+		
+		asteroid = ASTEROIDS.graphics.Texture( {
+			image : ASTEROIDS.images['images/Asteroid.png'],
+			center : { x : Random.nextRange(50, 600), y : -100 },
+			width : 100, height : 100,
+			rotation : 0,
+			moveRate : Math.abs(Random.nextGaussian(50, 10)),			// pixels per second
+			rotateRate : 3.14159	// Radians per second
+		});
+		
+//		for(var i = 0; i < 50; i++){
+//			asteroidsArray.push(
+//				asteroid = ASTEROIDS.graphics.Texture( {
+//					image : ASTEROIDS.images['images/Asteroid.png'],
+//					center : { x : Random.nextRange(50, 600), y : -100 },
+//					width : 100, height : 100,
+//					rotation : 0,
+//					moveRate : Math.abs(Random.nextGaussian(50, 10)),			// pixels per second
+//					rotateRate : 3.14159	// Radians per second
+//				})
+//			);
+//		}
+
 		
 		/*particlesFire = particleSystem( {
 			image : ASTEROIDS.images['images/LaserShot.png'],
@@ -82,6 +108,8 @@ ASTEROIDS.screens['game-play'] = (function() {
 		myMouse.update(elapsedTime);
 		ship.updatePos();
 		missile.updatePos();
+		asteroid.moveDown(elapsedTime);
+		asteroid.rotateRight(elapsedTime);
 	}
 	
 	//This is the main render function where various frameworks are rendered
@@ -90,6 +118,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		ASTEROIDS.graphics.clear();
 		ship.draw();
 		missile.draw();
+		asteroid.draw();
 	}
 	
 	//------------------------------------------------------------------
@@ -100,6 +129,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 	function gameLoop(time) {
 		ASTEROIDS.elapsedTime = time - ASTEROIDS.lastTimeStamp;
 		ASTEROIDS.lastTimeStamp = time;
+		count++;
 
 		gameUpdate(ASTEROIDS.elapsedTime);
 		gameRender(ASTEROIDS.elapsedTime);		
