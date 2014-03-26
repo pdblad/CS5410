@@ -10,6 +10,8 @@ ASTEROIDS.graphics = (function() {
 	
 	var canvas = document.getElementById('mainCanvas'),
 		context = canvas.getContext('2d');
+	ASTEROIDS.screenWidth = canvas.width = window.innerWidth;
+	ASTEROIDS.screenHeight = canvas.height = window.innerHeight;
 	
 	//
 	// Place a 'clear' function on the Canvas prototype, this makes it a part
@@ -28,12 +30,40 @@ ASTEROIDS.graphics = (function() {
 	function Texture(spec) {
 		var that = {};
 		
+		var wrap = function(){
+			var xMax = ASTEROIDS.screenWidth, yMax = ASTEROIDS.screenHeight;
+			// check x boundry
+			if (spec.center.x > xMax) {
+				spec.center.x -= xMax;
+			} else if (spec.center.x < 0) {
+				spec.center.x += xMax;
+			}
+			// check y bounds
+			if (spec.center.y > yMax) {
+				spec.center.y -= yMax;
+			} else if (spec.center.y < 0) {
+				spec.center.y += yMax;
+			}
+		};
+		
 		that.getX = function(){
 			return spec.center.x;
 		};
 		
 		that.getY = function(){
 			return spec.center.y;
+		};
+		
+		that.getRotation = function(){
+			return spec.rotation;
+		};
+		
+		that.getDx = function(){
+			return spec.dx;
+		};
+		
+		that.getDy = function(){
+			return spec.dy;
 		};
 		
 		that.moveLeft = function(elapsedTime) {
@@ -58,7 +88,7 @@ ASTEROIDS.graphics = (function() {
 		
 		that.rotateLeft = function(elapsedTime) {
 			spec.rotation -= spec.rotateRate * (elapsedTime / 1000);
-			console.log('Rotation: ' + spec.rotation);
+			//console.log('Rotation: ' + spec.rotation);
 		};
 		
 		that.fireThrusters = function(elapsedTime){
@@ -72,6 +102,7 @@ ASTEROIDS.graphics = (function() {
 			//this is friction, uncomment if friction is wanted
 			//spec.dx *= .98;
 			//spec.dy *= .98;
+			wrap();
 		};
 		
 		that.moveTo = function(center) {
@@ -97,9 +128,30 @@ ASTEROIDS.graphics = (function() {
 		return that;
 	}
 	
+	//------------------------------------------------------------------
+	//
+	// Expose an ability to draw an image/texture on the canvas.
+	//
+	//------------------------------------------------------------------
+	function drawImage(spec) {
+		context.save();
+		
+		context.translate(spec.center.x, spec.center.y);
+		context.rotate(spec.rotation);
+		context.translate(-spec.center.x, -spec.center.y);
+		
+		context.drawImage(
+			spec.image, 
+			spec.center.x - spec.size/2, 
+			spec.center.y - spec.size/2,
+			spec.size, spec.size);
+		
+		context.restore();
+	}
 
 	return {
 		clear : clear,
-		Texture : Texture
+		Texture : Texture,
+		drawImage : drawImage
 	};
 }());

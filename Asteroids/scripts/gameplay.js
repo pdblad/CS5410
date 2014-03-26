@@ -7,22 +7,47 @@ ASTEROIDS.screens['game-play'] = (function() {
 		myMouse = ASTEROIDS.input.Mouse(),
 		myKeyboard = ASTEROIDS.input.Keyboard(),
 		ship = null,
+		leftThruster = null,
+		rightThruster = null,
 		particlesMissile = null,
 		cancelNextRequest = false;
 	
 	function initialize() {
 		console.log('game initializing...');
+		//go fullscreen
+		var canvas = document.getElementById('mainCanvas');
+		canvas.requestFullScreen;
 
 		ship = ASTEROIDS.graphics.Texture( {
 			image : ASTEROIDS.images['images/USU-Logo.png'],
-			center : { x : 500, y : 500 },
-			width : 100, height : 100,
+			center : { x : ASTEROIDS.screenWidth/2, y : ASTEROIDS.screenHeight/2 },
+			width : 70, height : 70,
 			rotation : -3.14,
+			leftThrusterPos : {x : 0, y : 0},
+			rightThrusterPos : {x : 0, y : 0},
 			moveRate : 200,			// pixels per second
 			rotateRate : 3.14159,	// Radians per second
 			dx : 0,
 			dy : 0
 		});
+		
+		leftThruster = particleSystem({
+			image : ASTEROIDS.images['images/fire.png'],
+			center: {x: ship.rotation, y: ship.rotation},
+			speed: {mean: 50, stdev: 25},
+			lifetime: {mean: 4, stdev: 1}
+		},
+			ASTEROIDS.graphics
+		);
+		
+		rightThruster = particleSystem({
+			image : ASTEROIDS.images['images/fire.png'],
+			center : {x: ship.getX()+40, y: ship.getY()-20},
+			speed : {mean: 20, stdev: 5},
+			lifetime: {mean: 4, stdev: 1}
+		},
+			ASTEROIDS.graphics
+		);
 		
 		/*particlesFire = particleSystem( {
 			image : ASTEROIDS.images['images/LaserShot.png'],
@@ -70,6 +95,8 @@ ASTEROIDS.screens['game-play'] = (function() {
 		myKeyboard.update(elapsedTime);
 		myMouse.update(elapsedTime);
 		ship.updatePos();
+		rightThruster.updatePos(ship.getDx()*(-1), ship.getDy()*(-1));
+		rightThruster.update(elapsedTime/1000);
 	}
 	
 	//This is the main render function where various frameworks are rendered
@@ -77,6 +104,9 @@ ASTEROIDS.screens['game-play'] = (function() {
 	function gameRender(elapsedTime){
 		ASTEROIDS.graphics.clear();
 		ship.draw();
+		rightThruster.render();
+		rightThruster.create();
+		rightThruster.create();
 	}
 	
 	//------------------------------------------------------------------

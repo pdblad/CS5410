@@ -35,7 +35,8 @@ window.addEventListener('load', function() {
 			        'preload!scripts/random.js',
                     'preload!images/Background.png',
                     'preload!images/USU-Logo.png',
-                    'preload!images/LaserShot.png'
+                    'preload!images/LaserShot.png',
+                    'preload!images/fire.png'
 			],
 			complete : function() {
 				console.log('All files requested for loading...');

@@ -94,5 +94,15 @@ function particleSystem(spec, graphics) {
 		}
 	};
 	
+	//-------------------------
+	//
+	//Update particle system
+	//
+	//-------------------------
+	that.updatePos = function(x, y){
+		spec.center.x = x;
+		spec.center.y = y;
+	};
+	
 	return that;
 }
