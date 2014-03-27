@@ -21,6 +21,11 @@ ASTEROIDS.screens['main-menu'] = (function() {
 			function() { ASTEROIDS.game.showScreen('help'); },
 			false);
 		
+		document.getElementById('id-settings').addEventListener(
+			'click',
+			function() {ASTEROIDS.game.showScreen('settings');},
+			false);
+		
 		document.getElementById('id-credits').addEventListener(
 			'click',
 			function() { ASTEROIDS.game.showScreen('credits'); },

@@ -10,20 +10,16 @@ ASTEROIDS.screens['game-play'] = (function() {
 		leftThruster = null,
 		rightThruster = null,
 		particlesMissile = null,
-
 		missile = null,
 		cancelNextRequest = false;
 	
 	function initialize() {
 		console.log('game initializing...');
-		//go fullscreen
-		var canvas = document.getElementById('mainCanvas');
-		canvas.requestFullScreen;
 
 		ship = ASTEROIDS.graphics.Texture( {
 			image : ASTEROIDS.images['images/USU-Logo.png'],
 			center : { x : ASTEROIDS.screenWidth/2, y : ASTEROIDS.screenHeight/2 },
-			width : 70, height : 70,
+			width : 80, height : 80,
 			rotation : -3.14,
 			leftThrusterPos : {x : 0, y : 0},
 			rightThrusterPos : {x : 0, y : 0},

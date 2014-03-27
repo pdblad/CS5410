@@ -31,6 +31,7 @@ window.addEventListener('load', function() {
 			        'preload!scripts/help.js',
 			        'preload!scripts/highscores.js',
                     'preload!scripts/credits.js',
+                    'preload!scripts/settings.js',
                     'preload!scripts/particleSystem.js',
 			        'preload!scripts/random.js',
                     'preload!images/Background.png',
