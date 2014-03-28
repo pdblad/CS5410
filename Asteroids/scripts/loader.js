@@ -22,16 +22,17 @@ window.addEventListener('load', function() {
 		{
 			load : [
 			        'preload!scripts/renderer.js',
+			        'preload!scripts/textRenderer.js',
                     'preload!scripts/input.js',
 			        'preload!scripts/mainmenu.js',
 			        'preload!scripts/game.js',
                     'preload!scripts/screens.js',
 			        'preload!scripts/credits.js',
+			        'preload!scripts/settings.js',
 			        'preload!scripts/gameplay.js',
 			        'preload!scripts/help.js',
 			        'preload!scripts/highscores.js',
                     'preload!scripts/credits.js',
-                    'preload!scripts/settings.js',
                     'preload!scripts/particleSystem.js',
 			        'preload!scripts/random.js',
                     'preload!images/Background.png',

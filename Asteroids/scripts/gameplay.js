@@ -68,10 +68,6 @@ ASTEROIDS.screens['game-play'] = (function() {
 
 		//
 		// Create the keyboard input handler and register the keyboard commands
-		myKeyboard.registerCommand(KeyEvent.DOM_VK_A, ship.rotateLeft);
-		myKeyboard.registerCommand(KeyEvent.DOM_VK_D, ship.rotateRight);
-		myKeyboard.registerCommand(KeyEvent.DOM_VK_S, ship.fireThrusters);
-		myKeyboard.registerCommand(KeyEvent.DOM_VK_SPACE, missile.shoot);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function() {
 			//
 			// Stop the game loop by canceling the request for the next animation frame
@@ -141,6 +137,19 @@ ASTEROIDS.screens['game-play'] = (function() {
 		ASTEROIDS.lastTimeStamp = performance.now();
 		//
 		// Start the animation loop
+		if(!ASTEROIDS.customControls){
+			ASTEROIDS.navRight = KeyEvent.DOM_VK_L;
+			ASTEROIDS.navLeft = KeyEvent.DOM_VK_J;
+			ASTEROIDS.navThrust = KeyEvent.DOM_VK_K;
+			ASTEROIDS.shoot = KeyEvent.DOM_VK_Z;
+			ASTEROIDS.hyperSpace = KeyEvent.DOM_VK_H;
+		}
+		myKeyboard.registerCommand(ASTEROIDS.navLeft, ship.rotateLeft);
+		myKeyboard.registerCommand(ASTEROIDS.navRight, ship.rotateRight);
+		myKeyboard.registerCommand(ASTEROIDS.navThrust, ship.fireThrusters);
+		myKeyboard.registerCommand(ASTEROIDS.shoot, null); //ship.shoot to be implemented later
+		myKeyboard.registerCommand(ASTEROIDS.hyperSpace, null); //ship.hyperSpace to come
+		
 		cancelNextRequest = false;
 		requestAnimationFrame(gameLoop);
 	}
