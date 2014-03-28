@@ -5,6 +5,14 @@ function particleSystem(spec, graphics) {
 	var that = {},
 		nextName = 1,	// unique identifier for the next particle
 		particles = {};	// Set of all active particles
+	
+	that.setX = function(newX){
+		spec.center.x = newX;
+	};
+	
+	that.setY = function(newY){
+		spec.center.y = newY;
+	};
 
 	//------------------------------------------------------------------
 	//

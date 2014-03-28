@@ -37,7 +37,8 @@ window.addEventListener('load', function() {
 			        'preload!scripts/random.js',
                     'preload!images/Background.png',
                     'preload!images/USU-Logo.png',
-                    'preload!images/LaserShot.png',
+                    'preload!images/LaserBall.png',
+                    'preload!images/Asteroid.png',
                     'preload!images/fire.png'
 			],
 			complete : function() {

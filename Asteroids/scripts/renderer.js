@@ -30,9 +30,11 @@ ASTEROIDS.graphics = (function() {
 	function Texture(spec) {
 		var that = {};
 		
+		var resetCount = 0;
+
 		var wrap = function(){
 			var xMax = ASTEROIDS.screenWidth, yMax = ASTEROIDS.screenHeight;
-			// check x boundry
+			// check x boundary
 			if (spec.center.x > xMax) {
 				spec.center.x -= xMax;
 			} else if (spec.center.x < 0) {
@@ -44,6 +46,18 @@ ASTEROIDS.graphics = (function() {
 			} else if (spec.center.y < 0) {
 				spec.center.y += yMax;
 			}
+		};
+		
+		that.getWidth = function(){
+			return spec.width;
+		};
+		
+		that.getHeight = function(){
+			return spec.height;
+		};
+		
+		that.getRadius = function(){
+			return spec.height/2;
 		};
 		
 		that.getX = function(){
@@ -66,6 +80,27 @@ ASTEROIDS.graphics = (function() {
 			return spec.dy;
 		};
 		
+		that.reset = function(elapsedTime){
+//			if(resetCount <= 5){
+				spec.image = ASTEROIDS.images['images/USU-Logo.png'];
+				spec.center.x = ASTEROIDS.screenWidth/2;
+				spec.center.y = ASTEROIDS.screenHeight/2;
+				spec.width = 70;
+				spec.height = 70;
+				spec.rotation = -3.14;
+				spec.rotateRate = 3.14159;
+				spec.dx = 0;
+				spec.dy = 0;
+//			}
+//			//Once you die three times, this exits to the main menu
+//			else{
+//				ASTEROIDS.screens['game-play'].cancelNextRequest = true;
+//				ASTEROIDS.game.showScreen('main-menu');
+//				resetCount = 0;
+//			}
+//			resetCount++;
+		};
+		
 		that.moveLeft = function(elapsedTime) {
 			spec.center.x -= spec.moveRate * (elapsedTime / 1000);
 		};
@@ -80,6 +115,30 @@ ASTEROIDS.graphics = (function() {
 		
 		that.moveDown = function(elapsedTime) {
 			spec.center.y += spec.moveRate * (elapsedTime / 1000);
+			wrap();
+		};
+		
+		that.asteroidMovement = function(direction, elapsedTime) {
+			if(direction % 2 == 0){
+				that.rotateRight(elapsedTime);
+				that.moveRight(elapsedTime);
+				that.moveDown(elapsedTime);
+			}
+			else{
+				that.rotateLeft(elapsedTime);
+				that.moveLeft(elapsedTime);
+				that.moveUp(elapsedTime);
+			}
+			wrap();
+		};
+		
+		that.explosion = function(elapsedTime){
+			spec.image = ASTEROIDS.images['images/fire.png'];
+			spec.width = 200;
+			spec.height = 200;
+			spec.rotateRate = 0;
+			spec.dx = 0;
+			spec.dy = 0;
 		};
 		
 		that.rotateRight = function(elapsedTime) {
@@ -93,12 +152,13 @@ ASTEROIDS.graphics = (function() {
 		
 		that.fireThrusters = function(elapsedTime){
 			spec.dx += Math.cos(spec.rotation) * 0.1;
+//			console.log("dx value: " + spec.dx);
 	        spec.dy += Math.sin(spec.rotation) * 0.1;
+//	        console.log("dy value: " + spec.dy);
 		};
 		
 		that.shoot = function(elapsedTime){
-			console.log("Shoot!");
-			spec.center.x -= spec.speed * (elapsedTime / 1000);
+			//Shoot bullets
 		};
 		
 		that.updatePos = function(elapsedTime){
