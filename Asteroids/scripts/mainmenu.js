@@ -11,6 +11,11 @@ ASTEROIDS.screens['main-menu'] = (function() {
 			function() { ASTEROIDS.game.showScreen('game-play'); },
 			false);
 		
+		document.getElementById('id-settings').addEventListener(
+				'click',
+				function() {ASTEROIDS.game.showScreen('settings');},
+				false);
+		
 		document.getElementById('id-high-scores').addEventListener(
 			'click',
 			function() { ASTEROIDS.game.showScreen('high-scores'); },
