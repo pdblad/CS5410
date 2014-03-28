@@ -30,6 +30,8 @@ ASTEROIDS.graphics = (function() {
 	function Texture(spec) {
 		var that = {};
 		
+		var resetCount = 0;
+
 		var wrap = function(){
 			var xMax = ASTEROIDS.screenWidth, yMax = ASTEROIDS.screenHeight;
 			// check x boundary
@@ -79,12 +81,24 @@ ASTEROIDS.graphics = (function() {
 		};
 		
 		that.reset = function(elapsedTime){
-			spec.center.x = ASTEROIDS.screenWidth/2;
-			spec.center.y = ASTEROIDS.screenHeight/2;
-			spec.rotation = -3.14;
-			spec.rotateRate = 3.14159;
-			spec.dx = 0;
-			spec.dy = 0;
+//			if(resetCount <= 5){
+				spec.image = ASTEROIDS.images['images/USU-Logo.png'];
+				spec.center.x = ASTEROIDS.screenWidth/2;
+				spec.center.y = ASTEROIDS.screenHeight/2;
+				spec.width = 70;
+				spec.height = 70;
+				spec.rotation = -3.14;
+				spec.rotateRate = 3.14159;
+				spec.dx = 0;
+				spec.dy = 0;
+//			}
+//			//Once you die three times, this exits to the main menu
+//			else{
+//				ASTEROIDS.screens['game-play'].cancelNextRequest = true;
+//				ASTEROIDS.game.showScreen('main-menu');
+//				resetCount = 0;
+//			}
+//			resetCount++;
 		};
 		
 		that.moveLeft = function(elapsedTime) {
@@ -105,26 +119,26 @@ ASTEROIDS.graphics = (function() {
 		};
 		
 		that.asteroidMovement = function(direction, elapsedTime) {
-			if(direction <= 5){
+			if(direction % 2 == 0){
 				that.rotateRight(elapsedTime);
 				that.moveRight(elapsedTime);
 				that.moveDown(elapsedTime);
 			}
-			else if (direction > 5 && direction <= 10){
+			else{
 				that.rotateLeft(elapsedTime);
+				that.moveLeft(elapsedTime);
 				that.moveUp(elapsedTime);
 			}
-			else if (direction > 10 && direction <= 15){
-				that.rotateLeft(elapsedTime);
-				spec.center.y = ASTEROIDS.screenHeight/2;
-				that.moveRight(elapsedTime);
-			}
-			else{
-				that.rotateRight(elapsedTime);
-				spec.center.y = ASTEROIDS.screenHeight/4;
-				that.moveLeft(elapsedTime);
-			}
 			wrap();
+		};
+		
+		that.explosion = function(elapsedTime){
+			spec.image = ASTEROIDS.images['images/fire.png'];
+			spec.width = 200;
+			spec.height = 200;
+			spec.rotateRate = 0;
+			spec.dx = 0;
+			spec.dy = 0;
 		};
 		
 		that.rotateRight = function(elapsedTime) {

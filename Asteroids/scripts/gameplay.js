@@ -9,12 +9,13 @@ ASTEROIDS.screens['game-play'] = (function() {
 		ship = null,
 		leftThruster = null,
 		rightThruster = null,
-		particlesMissile = null,
+		particlesFire = null,
 
 		missile = null,
 		asteroid = null,
 		asteroidsArray = [],
 		count = 0,
+		pause = 0,
 		cancelNextRequest = false;
 	
 	var collisionDetected = function(object1, object2){
@@ -36,6 +37,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 	
 	function initialize() {
 		console.log('game initializing...');
+				
 		//go fullscreen
 		var canvas = document.getElementById('mainCanvas');
 		canvas.requestFullScreen;
@@ -86,22 +88,22 @@ ASTEROIDS.screens['game-play'] = (function() {
 				asteroid = ASTEROIDS.graphics.Texture( {
 					image : ASTEROIDS.images['images/Asteroid.png'],
 					center : { x : Random.nextRange(50, ASTEROIDS.screenWidth), y : -100 },
-					width : 100, height : 100,
+					width : 150, height : 150,
 					rotation : 0,
-					moveRate : Math.abs(Random.nextGaussian(50, 10)),			// pixels per second
-					rotateRate : 3.14159	// Radians per second
+					moveRate : Math.abs(Random.nextGaussian(75, 10)),			// pixels per second
+					rotateRate : 4	// Radians per second
 				})
 			);
 		}
 
 		
-		/*particlesFire = particleSystem( {
-			image : ASTEROIDS.images['images/LaserShot.png'],
-			center: {x: 300, y: 300},
-			speed: {mean: 50, stdev: 25},
+		particlesFire = particleSystem( {
+			image : ASTEROIDS.images['images/fire.png'],
+			center: {x: ship.getX(), y: ship.getY() },
+			speed: {mean: 100, stdev: 25},
 			lifetime: {mean: 4, stdev: 1}
 			}, ASTEROIDS.graphics
-		);*/
+		);
 
 
 		//
@@ -142,7 +144,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		ASTEROIDS.graphics.clear();
 		myKeyboard.update(elapsedTime);
 		myMouse.update(elapsedTime);
-		for(var i = 0; i < 5; i++){
+		for(var i = 0; i < 8; i++){
 			asteroidsArray[i].asteroidMovement(i, elapsedTime);
 		}
 		ship.updatePos();
@@ -156,13 +158,19 @@ ASTEROIDS.screens['game-play'] = (function() {
 	function gameRender(elapsedTime){
 		ship.draw();
 
-		for(var i = 0; i < 20; i++){
+		for(var i = 0; i < 8; i++){
 			if(collisionDetected(ship, asteroidsArray[i])){
-				ship.reset(elapsedTime);
+				pause += elapsedTime;
+				ship.explosion(elapsedTime);
+				//Explode for 1.5 seconds
+				if(pause >= 1500){
+					ship.reset(elapsedTime);
+					pause = 0;
+				}
 			}
 		}
 		
-		for(var i = 0; i < 5; i++){
+		for(var i = 0; i < 8; i++){
 			asteroidsArray[i].draw();
 		}
 //		rightThruster.render();
