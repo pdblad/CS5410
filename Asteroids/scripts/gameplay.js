@@ -44,28 +44,27 @@ ASTEROIDS.screens['game-play'] = (function() {
 			center : { x : ASTEROIDS.screenWidth/2, y : ASTEROIDS.screenHeight/2 },
 			width : 80, height : 80,
 			rotation : -3.14,
-			leftThrusterPos : {x : 0, y : 0},
-			rightThrusterPos : {x : 0, y : 0},
 			moveRate : 200,			// pixels per second
 			rotateRate : 3.14159,	// Radians per second
 			dx : 0,
-			dy : 0
+			dy : 0,
+			fireThrusters : false
 		});
 
 		leftThruster = particleSystem({
 			image : ASTEROIDS.images['images/fire.png'],
-			center: {x: ship.rotation, y: ship.rotation},
-			speed: {mean: 50, stdev: 25},
-			lifetime: {mean: 4, stdev: 1}
+			center: {x: ship.getLeftThrusterPos().x, y: ship.getLeftThrusterPos().y},
+			speed: {mean: 10, stdev: 2},
+			lifetime: {mean: 2, stdev: 1}
 		},
 			ASTEROIDS.graphics
 		);
 		
 		rightThruster = particleSystem({
 			image : ASTEROIDS.images['images/fire.png'],
-			center : {x: ship.getX()+40, y: ship.getY()-20},
-			speed : {mean: 20, stdev: 5},
-			lifetime: {mean: 4, stdev: 1}
+			center : {x: ship.getRightThrusterPos().x, y: ship.getRightThrusterPos().y},
+			speed : {mean: 10, stdev: 2},
+			lifetime: {mean: 2, stdev: 1}
 		},
 			ASTEROIDS.graphics
 		);
@@ -77,7 +76,8 @@ ASTEROIDS.screens['game-play'] = (function() {
 			rotation : -3.14,
 			speed : 500,
 			dx : 0,
-			dy : 0
+			dy : 0,
+			gun : {x : 100, y : 100}
 		});
 		
 		for(var i = 0; i < 20; i++){
@@ -85,7 +85,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 				asteroid = ASTEROIDS.graphics.Texture( {
 					image : ASTEROIDS.images['images/Asteroid.png'],
 					center : { x : Random.nextRange(50, ASTEROIDS.screenWidth), y : -100 },
-					width : 150, height : 150,
+					width : 100, height : 100,
 					rotation : 0,
 					moveRate : Math.abs(Random.nextGaussian(75, 10)),			// pixels per second
 					rotateRate : 4	// Radians per second
@@ -93,15 +93,13 @@ ASTEROIDS.screens['game-play'] = (function() {
 			);
 		}
 
-		
 		particlesFire = particleSystem( {
 			image : ASTEROIDS.images['images/fire.png'],
-			center: {x: ship.getX(), y: ship.getY() },
+			center: {x: ship.getX(), y: ship.getY()},
 			speed: {mean: 100, stdev: 25},
 			lifetime: {mean: 4, stdev: 1}
 			}, ASTEROIDS.graphics
 		);
-
 
 		//
 		// Create the keyboard input handler and register the keyboard commands
@@ -141,17 +139,26 @@ ASTEROIDS.screens['game-play'] = (function() {
 			asteroidsArray[i].asteroidMovement(i, elapsedTime);
 		}
 		ship.updatePos();
-//		rightThruster.updatePos(ship.getDx()*(-1), ship.getDy()*(-1));
-//		rightThruster.update(elapsedTime/1000);
+		//update thruster specs if the thruster button is hit
+		if(ship.getThrusterStatus()){
+			leftThruster.updatePos(ship.getLeftThrusterPos().x, ship.getLeftThrusterPos().y);
+			rightThruster.updatePos(ship.getRightThrusterPos().x, ship.getRightThrusterPos().y);
+			for(var i = 0; i < 10; i++){
+				leftThruster.create();
+				rightThruster.create();
+			}
+			ship.setThrusterStatus(false);
+		}
+		leftThruster.update(elapsedTime/1000);
+		rightThruster.update(elapsedTime/1000);
 //		missile.updatePos();
 	}
 	
 	//This is the main render function where various frameworks are rendered
 	//
 	function gameRender(elapsedTime){
-		ship.draw();
-
-		for(var i = 0; i < 8; i++){
+		ASTEROIDS.graphics.clear();
+		/*for(var i = 0; i < 8; i++){
 			if(collisionDetected(ship, asteroidsArray[i])){
 				pause += elapsedTime;
 				ship.explosion(elapsedTime);
@@ -166,10 +173,12 @@ ASTEROIDS.screens['game-play'] = (function() {
 		for(var i = 0; i < 8; i++){
 			asteroidsArray[i].draw();
 		}
-//		rightThruster.render();
-//		rightThruster.create();
-//		rightThruster.create();
+		*/
+		leftThruster.render();
+		rightThruster.render();
 //		missile.draw();
+		//draw ship last to make exaust go behind it
+		ship.draw();
 	}
 	
 	//------------------------------------------------------------------

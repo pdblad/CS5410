@@ -80,6 +80,35 @@ ASTEROIDS.graphics = (function() {
 			return spec.dy;
 		};
 		
+		that.getGunPos = function(){
+			return {
+				x : spec.center.x+(spec.height/2)*Math.cos(spec.rotation), 
+				y : spec.center.y+(spec.height/2)*Math.sin(spec.rotation)
+			};
+		};
+		
+		that.getLeftThrusterPos = function(){
+			return {
+				x : spec.center.x+(spec.height/2)*-Math.cos(.5+spec.rotation), 
+				y : spec.center.y+(spec.height/2)*-Math.sin(.5+spec.rotation)
+			};
+		};
+		
+		that.getRightThrusterPos = function(){
+			return {
+				x : spec.center.x+(spec.height/2)*-Math.cos(-.5+spec.rotation), 
+				y : spec.center.y+(spec.height/2)*-Math.sin(-.5+spec.rotation)
+			};
+		};
+		
+		that.getThrusterStatus = function(){
+			return spec.fireThrusters;
+		};
+		
+		that.setThrusterStatus = function(status){
+			spec.fireThrusters = status;
+		};
+		
 		that.reset = function(elapsedTime){
 //			if(resetCount <= 5){
 				spec.image = ASTEROIDS.images['images/USU-Logo.png'];
@@ -155,6 +184,7 @@ ASTEROIDS.graphics = (function() {
 //			console.log("dx value: " + spec.dx);
 	        spec.dy += Math.sin(spec.rotation) * 0.1;
 //	        console.log("dy value: " + spec.dy);
+	        spec.fireThrusters = true;
 		};
 		
 		that.shoot = function(elapsedTime){
