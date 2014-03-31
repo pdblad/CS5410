@@ -34,6 +34,7 @@ window.addEventListener('load', function() {
 			        'preload!scripts/highscores.js',
                     'preload!scripts/credits.js',
                     'preload!scripts/particleSystem.js',
+                    'preload!scripts/gun.js',
 			        'preload!scripts/random.js',
                     'preload!images/Background.png',
                     'preload!images/USU-Logo.png',

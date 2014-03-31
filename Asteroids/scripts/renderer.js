@@ -80,6 +80,13 @@ ASTEROIDS.graphics = (function() {
 			return spec.dy;
 		};
 		
+		that.getGunAngle = function(){
+			return{
+				x: Math.cos(spec.rotation),
+				y: Math.sin(spec.rotation)
+			};
+		};
+		
 		that.getGunPos = function(){
 			return {
 				x : spec.center.x+(spec.height/2)*Math.cos(spec.rotation), 
@@ -147,6 +154,28 @@ ASTEROIDS.graphics = (function() {
 			wrap();
 		};
 		
+		that.rotateRight = function(elapsedTime) {
+			spec.rotation += spec.rotateRate * (elapsedTime / 1000);
+			//console.log('Rotation: ' + spec.rotation);
+		};
+		
+		that.rotateLeft = function(elapsedTime) {
+			spec.rotation -= spec.rotateRate * (elapsedTime / 1000);
+			//console.log('Rotation: ' + spec.rotation);
+		};
+		
+		that.fireThrusters = function(elapsedTime){
+			spec.dx += Math.cos(spec.rotation) * 0.1;
+//			console.log("dx value: " + spec.dx);
+	        spec.dy += Math.sin(spec.rotation) * 0.1;
+//	        console.log("dy value: " + spec.dy);
+	        spec.fireThrusters = true;
+		};
+		
+		that.shoot = function(elapsedTime){
+			//Shoot bullets
+		};
+		
 		that.asteroidMovement = function(direction, elapsedTime) {
 			if(direction % 2 == 0){
 				that.rotateRight(elapsedTime);
@@ -168,27 +197,6 @@ ASTEROIDS.graphics = (function() {
 			spec.rotateRate = 0;
 			spec.dx = 0;
 			spec.dy = 0;
-		};
-		
-		that.rotateRight = function(elapsedTime) {
-			spec.rotation += spec.rotateRate * (elapsedTime / 1000);
-		};
-		
-		that.rotateLeft = function(elapsedTime) {
-			spec.rotation -= spec.rotateRate * (elapsedTime / 1000);
-			//console.log('Rotation: ' + spec.rotation);
-		};
-		
-		that.fireThrusters = function(elapsedTime){
-			spec.dx += Math.cos(spec.rotation) * 0.1;
-//			console.log("dx value: " + spec.dx);
-	        spec.dy += Math.sin(spec.rotation) * 0.1;
-//	        console.log("dy value: " + spec.dy);
-	        spec.fireThrusters = true;
-		};
-		
-		that.shoot = function(elapsedTime){
-			//Shoot bullets
 		};
 		
 		that.updatePos = function(elapsedTime){
