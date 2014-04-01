@@ -148,7 +148,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		for(var i = 0; i < 8; i++){
 			asteroidsArray[i].asteroidMovement(i, elapsedTime);
 		}
-
+		missile.findParticle(asteroidsArray);
 		ship.updatePos();
 
 		//update thruster specs if the thruster button is hit

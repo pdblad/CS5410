@@ -7,6 +7,11 @@ function gun(spec, graphics) {
     var that = {},
             nextName = 1, // unique identifier for the next particle
             particles = {};	// Set of all active particles
+    
+    var asteroidHit = function(x1, y1, r1, x2, y2, r2) {
+        var distance = Math.sqrt(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)));
+        return distance < (r1 + r2);
+    };
 
     //------------------------------------------------------------------
     //
@@ -103,40 +108,29 @@ function gun(spec, graphics) {
         }
         removeMe.length = 0;
     };
-
+    
     //finds if the mouse clicked event is over any of our objects
     //
     //adapt this to test if bullet should be removed early after asteroid collision
-    /*
-    that.findParticle = function(mouseX, mouseY) {
+    that.findParticle = function(asteroids) {
         var removeMe = [],
                 value,
                 particle;
         for (value in particles) {
             if (particles.hasOwnProperty(value)) {
                 particle = particles[value];
-                //
-                // check if mousex and y are in the diameter of the particle
-                if (COINGAME.inCircle(particle.center.x, particle.center.y, mouseX, mouseY, particle.size / 2)) {
-                    removeMe.push(value);
-                    //add particle.value to the score
-                    if (particle.value === -1){
-                        //canadian
-                        COINGAME.totalScore.text = 0;
-                        COINGAME.playBuzzer();
-                    }
-                    else if (particle.value === 0){
-                        //clock, add more coins
-                        COINGAME.addCoinsBool = true;
-                        COINGAME.playLevelUp();
-                    }
-                    else{
-                        COINGAME.totalScore.text += particle.value;
-                        COINGAME.dollarParticleSpec.center.x = mouseX;
-                        COINGAME.dollarParticleSpec.center.y = mouseY;
-                        COINGAME.playCashSound();
-                        COINGAME.hitCount++;
-                    }
+                for(var i = 0; i < asteroids.length; i++){
+                	if (asteroidHit(particle.center.x, particle.center.y, particle.size/2, asteroids[i].getX(), asteroids[i].getY(), asteroids[i].getWidth()/2)) {
+                    	removeMe.push(value);
+                    	asteroids.splice(i, 1);
+                    	//add particle.value to the score
+                    	if (particle.value === -1){
+                    	}
+                    	else if (particle.value === 0){
+                    	}
+                    	else{
+                    	}
+                	}
                 }
             }
         }
@@ -146,7 +140,6 @@ function gun(spec, graphics) {
         }
         removeMe.length = 0;
     };
-	*/
 
     //function that tells us if the particles{} object has anymore properties
     //
