@@ -16,6 +16,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		asteroidsArray = [],
 		count = 0,
 		pause = 0,
+		missileCount = 0,
 		cancelNextRequest = false;
 	
 	var collisionDetected = function(object1, object2){
@@ -40,7 +41,11 @@ ASTEROIDS.screens['game-play'] = (function() {
 						//{x: ship.getGunAngle().x, y: ship.getGunAngle().y},
 						ship.getRotation()
 			);
-		missile.create();
+		missileCount++;
+		if(missileCount === 8){
+			missile.create();
+			missileCount = 0;
+		}
 	};
 	
 	function initialize() {
@@ -62,8 +67,8 @@ ASTEROIDS.screens['game-play'] = (function() {
 			image: ASTEROIDS.images['images/LaserBall.png'],
 			center: {x: ship.getGunPos().x, y: ship.getGunPos().y},
 			direction: {x: 0, y: 0},
-			speed: 200,
-			lifetime: 10,
+			speed: 350,
+			lifetime: 5,
 			}, ASTEROIDS.graphics
 		);
 		
