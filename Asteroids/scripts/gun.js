@@ -122,7 +122,8 @@ function gun(spec, graphics) {
                 for(var i = 0; i < asteroids.length; i++){
                 	if (asteroidHit(particle.center.x, particle.center.y, particle.size/2, asteroids[i].getX(), asteroids[i].getY(), asteroids[i].getWidth()/2)) {
                     	removeMe.push(value);
-                    	asteroids.splice(i, 1);
+//                    	asteroids.splice(i, 1);
+                    	asteroids[i].removeAsteroid();
                     	//add particle.value to the score
                     	if (particle.value === -1){
                     	}

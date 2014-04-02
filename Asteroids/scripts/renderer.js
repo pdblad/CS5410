@@ -35,16 +35,18 @@ ASTEROIDS.graphics = (function() {
 		var wrap = function(){
 			var xMax = ASTEROIDS.screenWidth, yMax = ASTEROIDS.screenHeight;
 			// check x boundary
-			if (spec.center.x > xMax) {
-				spec.center.x -= xMax;
-			} else if (spec.center.x < 0) {
-				spec.center.x += xMax;
-			}
-			// check y bounds
-			if (spec.center.y > yMax) {
-				spec.center.y -= yMax;
-			} else if (spec.center.y < 0) {
-				spec.center.y += yMax;
+			if (spec.center.x !== 5000 && spec.center.y !== 5000){
+				if (spec.center.x > xMax) {
+					spec.center.x -= xMax;
+				} else if (spec.center.x < 0) {
+					spec.center.x += xMax;
+				}
+				// check y bounds
+				if (spec.center.y > yMax) {
+					spec.center.y -= yMax;
+				} else if (spec.center.y < 0) {
+					spec.center.y += yMax;
+				}
 			}
 		};
 		
@@ -135,6 +137,14 @@ ASTEROIDS.graphics = (function() {
 //				resetCount = 0;
 //			}
 //			resetCount++;
+		};
+		
+		that.removeAsteroid = function(){
+			spec.center.x = 5000;
+			spec.center.y = 5000;
+			spec.rotation = 0;
+			spec.moveRate = 0;
+			spec.rotateRate = 0;
 		};
 		
 		that.moveLeft = function(elapsedTime) {

@@ -17,6 +17,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		count = 0,
 		pause = 0,
 		missileCount = 0,
+		numAsteroids = 0,
 		cancelNextRequest = false;
 	
 	var collisionDetected = function(object1, object2){
@@ -50,6 +51,8 @@ ASTEROIDS.screens['game-play'] = (function() {
 	
 	function initialize() {
 		console.log('game initializing...');
+		
+		numAsteroids = 10;
 
 		ship = ASTEROIDS.graphics.Texture( {
 			image : ASTEROIDS.images['images/USU-Logo.png'],
@@ -97,15 +100,15 @@ ASTEROIDS.screens['game-play'] = (function() {
 			}, ASTEROIDS.graphics
 		);
 		
-		for(var i = 0; i < 20; i++){
+		for(var i = 0; i < numAsteroids; i++){
 			asteroidsArray.push(
 				asteroid = ASTEROIDS.graphics.Texture( {
-					image : ASTEROIDS.images['images/Asteroid.png'],
+					image : ASTEROIDS.images['images/Asteroid2.png'],
 					center : { x : Random.nextRange(50, ASTEROIDS.screenWidth), y : -100 },
-					width : 100, height : 100,
+					width : 125, height : 125,
 					rotation : 0,
 					moveRate : Math.abs(Random.nextGaussian(75, 10)),			// pixels per second
-					rotateRate : 4	// Radians per second
+					rotateRate : Random.nextRange(2, 6)	// Radians per second
 				})
 			);
 		}
@@ -145,7 +148,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		myKeyboard.update(elapsedTime);
 		myMouse.update(elapsedTime);
 		
-		for(var i = 0; i < 8; i++){
+		for(var i = 0; i < asteroidsArray.length; i++){
 			asteroidsArray[i].asteroidMovement(i, elapsedTime);
 		}
 		missile.findParticle(asteroidsArray);
@@ -171,7 +174,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 	//
 	function gameRender(elapsedTime){
 		ASTEROIDS.graphics.clear();
-		for(var i = 0; i < 8; i++){
+		for(var i = 0; i < asteroidsArray.length; i++){
 			if(collisionDetected(ship, asteroidsArray[i])){
 				pause += elapsedTime;
 				ship.explosion(elapsedTime);
@@ -183,7 +186,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 			}
 		}
 		
-		for(var i = 0; i < 8; i++){
+		for(var i = 0; i < asteroidsArray.length; i++){
 			asteroidsArray[i].draw();
 		}
 		
