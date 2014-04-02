@@ -39,7 +39,7 @@ window.addEventListener('load', function() {
                     'preload!images/Background.png',
                     'preload!images/USU-Logo.png',
                     'preload!images/LaserBall.png',
-                    'preload!images/Asteroid.png',
+                    'preload!images/Asteroid2.png',
                     'preload!images/fire.png'
 			],
 			complete : function() {
