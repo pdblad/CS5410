@@ -19,10 +19,13 @@ ASTEROIDS.screens['game-play'] = (function() {
 		count = 0,
 		pause = 0,
 		missileCount = 0,
+<<<<<<< HEAD
 		numAsteroids = 0,
+=======
 		shootAudio = null,
 		ufoAudio = null,
 		thrustAudio = null,
+>>>>>>> 626065d35ea62a50540f2b38a65ddfdd4c38ac07
 		cancelNextRequest = false;
 	
 	var collisionDetected = function(object1, object2){
@@ -130,6 +133,9 @@ ASTEROIDS.screens['game-play'] = (function() {
 			}, ASTEROIDS.graphics
 		);
 		
+<<<<<<< HEAD
+		for(var i = 0; i < numAsteroids; i++){
+=======
 		shootAudio = audio({
 			sound: 'sounds/asteroids_shoot.wav',
 			duration: 0
@@ -145,11 +151,12 @@ ASTEROIDS.screens['game-play'] = (function() {
 			duration: 0
 		});
 		
-		for(var i = 0; i < numAsteroids; i++){
+		for(var i = 0; i < 20; i++){
+>>>>>>> 626065d35ea62a50540f2b38a65ddfdd4c38ac07
 			asteroidsArray.push(
 				asteroid = ASTEROIDS.graphics.Texture( {
 					image : ASTEROIDS.images['images/Asteroid2.png'],
-					center : { x : Random.nextRange(50, ASTEROIDS.screenWidth), y : ASTEROIDS.screenHeight },
+					center : { x : Random.nextRange(50, ASTEROIDS.screenWidth), y : -100 },
 					width : 125, height : 125,
 					rotation : 0,
 					moveRate : Math.abs(Random.nextGaussian(75, 10)),			// pixels per second

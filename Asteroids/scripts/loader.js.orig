@@ -2,7 +2,6 @@
 var ASTEROIDS = {
 	images : {},
 	screens : {},
-//	sounds : {},
 
 	status : {
 		preloadRequest : 0,
@@ -41,13 +40,18 @@ window.addEventListener('load', function() {
                     'preload!images/Background.png',
                     'preload!images/USU-Logo.png',
                     'preload!images/LaserBall.png',
+<<<<<<< HEAD
                     'preload!images/Asteroid2.png',
+                    'preload!images/fire.png'
+=======
+                    'preload!images/Asteroid.png',
                     'preload!images/fire.png',
                     'preload!images/BYU-Logo.png',
-                    'preload!images/UofU-Logo.png',
+                    'preload!images/UofU-Logo.png'
 //                    'preload!sounds/asteroids_saucer.wav',
 //                    'preload!sounds/asteroids_shoot.wav',
 //                    'preload!sounds/asteroids_thrust.wav'
+>>>>>>> 626065d35ea62a50540f2b38a65ddfdd4c38ac07
 			],
 			complete : function() {
 				console.log('All files requested for loading...');
@@ -66,8 +70,6 @@ yepnope.addPrefix('preload', function(resource) {
 	
 	ASTEROIDS.status.preloadRequest += 1;
 	var isImage = /.+\.(jpg|png|gif)$/i.test(resource.url);
-//	var isSound = /.+\.(mp3|wav)$/i.test(resource.url);
-
 	resource.noexec = isImage;
 	resource.autoCallback = function(e) {
 		if (isImage) {
@@ -75,12 +77,6 @@ yepnope.addPrefix('preload', function(resource) {
 			image.src = resource.url;
 			ASTEROIDS.images[resource.url] = image;
 		}
-//		if (isSound) {
-//			var sound = new Sound();
-//			sound.src = resource.url;
-//			ASTEROIDS.sounds[resource.url] = sound;
-//		}
-
 		ASTEROIDS.status.preloadComplete += 1;
 		
 		//

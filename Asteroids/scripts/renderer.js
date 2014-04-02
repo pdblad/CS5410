@@ -218,6 +218,23 @@ ASTEROIDS.graphics = (function() {
 			wrap();
 		};
 		
+		that.updateEnemy = function(difficulty, elapsedTime){
+			//that.rotateRight(elapsedTime);
+			var randomnumber=Math.floor(Math.random()*4);
+			if(randomnumber === 0)
+				that.fireThrusters(elapsedTime);	
+			else if(randomnumber === 1){
+				for(var i = 0; i<10; i++)
+					that.rotateLeft(elapsedTime);
+			}
+			else if (randomnumber === 2){
+				for(var i = 0; i<10; i++)
+					that.rotateRight(elapsedTime);
+			}
+			else{}
+			that.updatePos(elapsedTime);
+		};
+		
 		that.moveTo = function(center) {
 			spec.center = center;
 		};
