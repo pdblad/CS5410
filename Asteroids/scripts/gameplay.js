@@ -3,16 +3,14 @@
 ASTEROIDS.screens['game-play'] = (function() {
 	'use strict';
 	
-	var mouseCapture = false,
-		myMouse = ASTEROIDS.input.Mouse(),
-		myKeyboard = ASTEROIDS.input.Keyboard(),
+	var myKeyboard = ASTEROIDS.input.Keyboard(),
 		ship = null,
 		enemyShipEasy = null,
 		enemyShipHard = null,
 		leftThruster = null,
 		rightThruster = null,
-		particlesFire = null,
-		particlesMissile = null,
+		shipExplosion = null,
+		asteroidExplosion = null,
 		missile = null,
 		asteroid = null,
 		asteroidsArray = [],
@@ -122,11 +120,11 @@ ASTEROIDS.screens['game-play'] = (function() {
 			}, ASTEROIDS.graphics
 		);
 
-		particlesFire = particleSystem( {
+		shipExplosion = particleSystem({
 			image : ASTEROIDS.images['images/fire.png'],
-			center: {x: ship.getX(), y: ship.getY()},
-			speed: {mean: 100, stdev: 25},
-			lifetime: {mean: 4, stdev: 1}
+			center : {x: ship.getX(), y: ship.getY()},
+			speed : {mean: 10, stdev: 2},
+			lifetime: {mean: 2, stdev: 1}
 			}, ASTEROIDS.graphics
 		);
 		
