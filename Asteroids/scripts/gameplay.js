@@ -107,7 +107,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		
 
 		leftThruster = particleSystem({
-			image : ASTEROIDS.images['images/fire.png'],
+			image : ASTEROIDS.images['images/blueFire.png'],
 			center: {x: ship.getLeftThrusterPos().x, y: ship.getLeftThrusterPos().y},
 			speed: {mean: 10, stdev: 2},
 			lifetime: {mean: 2, stdev: 1}
@@ -115,21 +115,13 @@ ASTEROIDS.screens['game-play'] = (function() {
 		);
 		
 		rightThruster = particleSystem({
-			image : ASTEROIDS.images['images/fire.png'],
+			image : ASTEROIDS.images['images/blueFire.png'],
 			center : {x: ship.getRightThrusterPos().x, y: ship.getRightThrusterPos().y},
 			speed : {mean: 10, stdev: 2},
 			lifetime: {mean: 2, stdev: 1}
 			}, ASTEROIDS.graphics
 		);
 
-		particlesFire = particleSystem( {
-			image : ASTEROIDS.images['images/fire.png'],
-			center: {x: ship.getX(), y: ship.getY()},
-			speed: {mean: 100, stdev: 25},
-			lifetime: {mean: 4, stdev: 1}
-			}, ASTEROIDS.graphics
-		);
-		
 		shootAudio = audio({
 			sound: 'sounds/asteroids_shoot.wav',
 			duration: 0
@@ -213,10 +205,11 @@ ASTEROIDS.screens['game-play'] = (function() {
 				pause += elapsedTime;
 				ship.explosion(elapsedTime);
 				//Explode for 1.5 seconds
-				if(pause >= 1500){
-					ship.reset(elapsedTime);
-					pause = 0;
-				}
+				ship.reset(elapsedTime);
+//				if(pause >= 1500){
+//					ship.reset(elapsedTime);
+//					pause = 0;
+//				}
 			}
 		}
 		

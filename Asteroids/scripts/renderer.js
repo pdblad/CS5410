@@ -201,7 +201,7 @@ ASTEROIDS.graphics = (function() {
 		};
 		
 		that.explosion = function(elapsedTime){
-			spec.image = ASTEROIDS.images['images/fire.png'];
+			spec.image = ASTEROIDS.images['images/blueFire.png'];
 			spec.width = 200;
 			spec.height = 200;
 			spec.rotateRate = 0;
