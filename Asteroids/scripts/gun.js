@@ -115,7 +115,10 @@ function gun(spec, graphics) {
     that.findParticle = function(asteroids) {
         var removeMe = [],
                 value,
-                particle;
+                particle,
+                asteroidPos = {x:0, y:0},
+                asteroidSize = 0,
+                hit = false;
         //particle in this loop is the bullet
         for (value in particles) {
             if (particles.hasOwnProperty(value)) {
@@ -124,7 +127,9 @@ function gun(spec, graphics) {
                 	if (asteroidHit(particle.center.x, particle.center.y, particle.size/2, asteroids[i].getX(), asteroids[i].getY(), asteroids[i].getWidth()/2)) {
                     	removeMe.push(value);
 //                    	asteroids.splice(i, 1);
-                    	asteroids[i].removeAsteroid();
+                    	asteroidPos = asteroids[i].removeAsteroid();
+                    	asteroidSize = asteroids[i].getSize();
+                    	hit = true;
                     	//add particle.value to the score
                     	if (particle.value === -1){
                     	}
@@ -141,6 +146,7 @@ function gun(spec, graphics) {
             delete particles[removeMe[particle]];
         }
         removeMe.length = 0;
+        return {hit: hit, x: asteroidPos.x, y: asteroidPos.y, size: asteroidSize};
     };
 
     //function that tells us if the particles{} object has anymore properties

@@ -82,6 +82,10 @@ ASTEROIDS.graphics = (function() {
 			return spec.dy;
 		};
 		
+		that.getSize = function(){
+			return spec.size;
+		};
+		
 		that.getGunAngle = function(){
 			return{
 				x: Math.cos(spec.rotation),
@@ -118,33 +122,15 @@ ASTEROIDS.graphics = (function() {
 			spec.fireThrusters = status;
 		};
 		
-		that.reset = function(elapsedTime){
-//			if(resetCount <= 5){
-				spec.image = ASTEROIDS.images['images/USU-Logo.png'];
-				spec.center.x = ASTEROIDS.screenWidth/2;
-				spec.center.y = ASTEROIDS.screenHeight/2;
-				spec.width = 70;
-				spec.height = 70;
-				spec.rotation = -3.14;
-				spec.rotateRate = 3.14159;
-				spec.dx = 0;
-				spec.dy = 0;
-//			}
-//			//Once you die three times, this exits to the main menu
-//			else{
-//				ASTEROIDS.screens['game-play'].cancelNextRequest = true;
-//				ASTEROIDS.game.showScreen('main-menu');
-//				resetCount = 0;
-//			}
-//			resetCount++;
-		};
-		
 		that.removeAsteroid = function(){
+			var oldX = that.getX(),
+				oldY = that.getY();
 			spec.center.x = 5000;
 			spec.center.y = 5000;
 			spec.rotation = 0;
 			spec.moveRate = 0;
 			spec.rotateRate = 0;
+			return {x: oldX, y: oldY};
 		};
 		
 		that.moveLeft = function(elapsedTime) {
@@ -196,13 +182,34 @@ ASTEROIDS.graphics = (function() {
 			wrap();
 		};
 		
-		that.explosion = function(elapsedTime){
-			spec.image = ASTEROIDS.images['images/blueFire.png'];
+		that.shipHit = function(){
 			spec.width = 200;
 			spec.height = 200;
 			spec.rotateRate = 0;
 			spec.dx = 0;
 			spec.dy = 0;
+			that.moveTo(5000, 5000);
+		};
+		
+		that.reset = function(elapsedTime){
+//			if(resetCount <= 5){
+				spec.image = ASTEROIDS.images['images/USU-Logo.png'];
+				spec.center.x = ASTEROIDS.screenWidth/2;
+				spec.center.y = ASTEROIDS.screenHeight/2;
+				spec.width = 70;
+				spec.height = 70;
+				spec.rotation = -3.14;
+				spec.rotateRate = 3.14159;
+				spec.dx = 0;
+				spec.dy = 0;
+//			}
+//			//Once you die three times, this exits to the main menu
+//			else{
+//				ASTEROIDS.screens['game-play'].cancelNextRequest = true;
+//				ASTEROIDS.game.showScreen('main-menu');
+//				resetCount = 0;
+//			}
+//			resetCount++;
 		};
 		
 		that.updatePos = function(elapsedTime){
