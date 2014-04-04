@@ -117,6 +117,7 @@ function gun(spec, graphics) {
                 value,
                 particle,
                 asteroidPos = {x:0, y:0},
+                asteroidSize = 0,
                 hit = false;
         //particle in this loop is the bullet
         for (value in particles) {
@@ -127,6 +128,7 @@ function gun(spec, graphics) {
                     	removeMe.push(value);
 //                    	asteroids.splice(i, 1);
                     	asteroidPos = asteroids[i].removeAsteroid();
+                    	asteroidSize = asteroids[i].getSize();
                     	hit = true;
                     	//add particle.value to the score
                     	if (particle.value === -1){
@@ -144,7 +146,7 @@ function gun(spec, graphics) {
             delete particles[removeMe[particle]];
         }
         removeMe.length = 0;
-        return {hit: hit, x: asteroidPos.x, y: asteroidPos.y};
+        return {hit: hit, x: asteroidPos.x, y: asteroidPos.y, size: asteroidSize};
     };
 
     //function that tells us if the particles{} object has anymore properties

@@ -82,6 +82,10 @@ ASTEROIDS.graphics = (function() {
 			return spec.dy;
 		};
 		
+		that.getSize = function(){
+			return spec.size;
+		};
+		
 		that.getGunAngle = function(){
 			return{
 				x: Math.cos(spec.rotation),

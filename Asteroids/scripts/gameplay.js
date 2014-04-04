@@ -23,6 +23,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		shootAudio = null,
 		ufoAudio = null,
 		thrustAudio = null,
+		explosionAudio = null,
 		asteroidHit = false,
 		cancelNextRequest = false,
 		shipHit = false;
@@ -177,6 +178,11 @@ ASTEROIDS.screens['game-play'] = (function() {
 			duration: 0
 		});
 		
+		explosionAudio = audio({
+			sound: 'sounds/depthCharge.wav',
+			duration: 0
+		});
+		
 		for(var i = 0; i < numAsteroids; i++){
 			asteroidsArray.push(
 				asteroid = ASTEROIDS.graphics.Texture( {
@@ -185,7 +191,8 @@ ASTEROIDS.screens['game-play'] = (function() {
 					width : 125, height : 125,
 					rotation : 0,
 					moveRate : Math.abs(Random.nextGaussian(75, 10)),			// pixels per second
-					rotateRate : Random.nextRange(2, 6)	// Radians per second
+					rotateRate : Random.nextRange(2, 6),	// Radians per second
+					size : 3
 				})
 			);
 		}
@@ -215,11 +222,49 @@ ASTEROIDS.screens['game-play'] = (function() {
 		//asteroidHit === true then this code does stuff to make explosion there
 		asteroidHit = missile.findParticle(asteroidsArray);
 		if(asteroidHit.hit){
+			explosionAudio.play();
+			var x = asteroidHit.x, 
+				y = asteroidHit.y,
+				size = asteroidHit.size;
 			asteroidExplosion.updatePos(asteroidHit.x, asteroidHit.y);
 			for(var i = 0; i < 10; i++)
 				asteroidExplosion.create();
 			asteroidHit = false;
 //			console.log('Asteroid Hit!  ' + asteroidHit.x);
+			//add new asteroids
+			//size 3 asteroids split into 3 smaller ones
+			if(size === 3){
+				for(i = 0; i < 3; i++){
+					asteroidsArray.push(ASTEROIDS.graphics.Texture( {
+								image : ASTEROIDS.images['images/Asteroid2.png'],
+								center : { x : x, y : y },
+								width : 75, height : 75,
+								rotation : 0,
+								moveRate : Math.abs(Random.nextGaussian(75, 10)),			// pixels per second
+								rotateRate : Random.nextRange(2, 6),	// Radians per second
+								size : 2
+							})
+						);
+					numAsteroids++;
+				}
+			}
+			//size 2 asteroids split into 4 smaller ones
+//this is commented out because on my little screen it just became unplayable too fast
+//			if(size === 2){
+//				for(i = 0; i < 4; i++){
+//					asteroidsArray.push(ASTEROIDS.graphics.Texture( {
+//								image : ASTEROIDS.images['images/Asteroid2.png'],
+//								center : { x : x, y : y },
+//								width : 30, height : 30,
+//								rotation : 0,
+//								moveRate : Math.abs(Random.nextGaussian(75, 10)),			// pixels per second
+//								rotateRate : Random.nextRange(2, 6),	// Radians per second
+//								size : 2
+//							})
+//						);
+//					numAsteroids++;
+//				}
+//			}
 		}
 		//end asteroid hit stuff
 		
