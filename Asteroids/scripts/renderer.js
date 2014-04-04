@@ -35,7 +35,7 @@ ASTEROIDS.graphics = (function() {
 		var wrap = function(){
 			var xMax = ASTEROIDS.screenWidth, yMax = ASTEROIDS.screenHeight;
 			// check x boundary
-			if (spec.center.x !== 5000 && spec.center.y !== 5000){
+			if (spec.center.x !== Math.abs(5000) && spec.center.y !== Math.abs(5000)){
 				if (spec.center.x > xMax) {
 					spec.center.x -= xMax;
 				} else if (spec.center.x < 0) {
@@ -181,11 +181,7 @@ ASTEROIDS.graphics = (function() {
 //	        console.log("dy value: " + spec.dy);
 	        spec.fireThrusters = true;
 		};
-		
-		that.shoot = function(elapsedTime){
-			//Shoot bullets
-		};
-		
+				
 		that.asteroidMovement = function(direction, elapsedTime) {
 			if(direction % 2 == 0){
 				that.rotateRight(elapsedTime);
@@ -235,8 +231,9 @@ ASTEROIDS.graphics = (function() {
 			that.updatePos(elapsedTime);
 		};
 		
-		that.moveTo = function(center) {
-			spec.center = center;
+		that.moveTo = function(x, y) {
+			spec.center.x = x;
+			spec.center.y = y;
 		};
 		
 		that.draw = function() {

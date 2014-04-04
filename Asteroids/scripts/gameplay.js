@@ -20,6 +20,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		pause = 0,
 		missileCount = 0,
 		numAsteroids = 0,
+		hyperCount = 0,
 		shootAudio = null,
 		ufoAudio = null,
 		thrustAudio = null,
@@ -42,6 +43,36 @@ ASTEROIDS.screens['game-play'] = (function() {
 		return (distance <= (object1Radius + object2Radius));
 	};
 	
+	var isSafe = function(x, y){
+		var safeRadius = 200;
+		var safeDistance = false;
+		for(var i = 0; i < asteroidsArray.length; i++){
+			var xDistance = x - asteroidsArray[i].getX();
+			var yDistance = y - asteroidsArray[i].getY();
+			safeDistance = (Math.sqrt((xDistance*xDistance) + (yDistance*yDistance)) >= (safeRadius+asteroidsArray[i].getRadius()));
+		}
+		
+		return safeDistance;
+	};
+	
+	var hyperJump = function(){
+		if(ASTEROIDS.hyperReady){
+			var x = Random.nextRange(0, ASTEROIDS.screenWidth); 
+			var y = Random.nextRange(0, ASTEROIDS.screenHeight);
+	
+			if(isSafe(x, y)){
+				ship.moveTo(x, y);
+			}
+			else if(!isSafe(x, y)){
+				x = Random.nextRange(0, ASTEROIDS.screenWidth); 
+				y = Random.nextRange(0, ASTEROIDS.screenHeight);
+				hyperJump();
+			}
+			ASTEROIDS.hyperReady = false;
+			hyperCount = 0;
+		}
+	};
+	
 	var fireMissile = function(){
 		missile.updatePos({x: ship.getGunPos().x, y: ship.getGunPos().y}, 
 						//{x: ship.getGunAngle().x, y: ship.getGunAngle().y},
@@ -57,13 +88,14 @@ ASTEROIDS.screens['game-play'] = (function() {
 	
 	function initialize() {
 		console.log('game initializing...');
-		
+		ASTEROIDS.hyperReady = true;
+
 		numAsteroids = 10;
 
 		ship = ASTEROIDS.graphics.Texture( {
 			image : ASTEROIDS.images['images/USU-Logo.png'],
 			center : { x : ASTEROIDS.screenWidth/2, y : ASTEROIDS.screenHeight/2 },
-			width : 80, height : 80,
+			width : 70, height : 70,
 			rotation : -3.14,
 			moveRate : 200,			// pixels per second
 			rotateRate : 3.14159,	// Radians per second
@@ -199,9 +231,14 @@ ASTEROIDS.screens['game-play'] = (function() {
 	//This is the main render function where various frameworks are rendered
 	//
 	function gameRender(elapsedTime){
+		hyperCount += elapsedTime;
+		if (hyperCount > 1000){
+			ASTEROIDS.hyperReady = true;
+		}
 		ASTEROIDS.graphics.clear();
 		for(var i = 0; i < asteroidsArray.length; i++){
 			if(collisionDetected(ship, asteroidsArray[i])){
+				console.log("Collision!");
 				pause += elapsedTime;
 				ship.explosion(elapsedTime);
 				//Explode for 1.5 seconds
@@ -264,7 +301,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		myKeyboard.registerCommand(ASTEROIDS.navRight, ship.rotateRight);
 		myKeyboard.registerCommand(ASTEROIDS.navThrust, ship.fireThrusters);
 		myKeyboard.registerCommand(ASTEROIDS.shoot, fireMissile);
-		myKeyboard.registerCommand(ASTEROIDS.hyperSpace, null); //ship.hyperSpace to come
+		myKeyboard.registerCommand(ASTEROIDS.hyperSpace, hyperJump);
 		
 		cancelNextRequest = false;
 		requestAnimationFrame(gameLoop);
