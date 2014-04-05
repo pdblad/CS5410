@@ -21,13 +21,15 @@ ASTEROIDS.screens['game-play'] = (function() {
 		missileCount = 0,
 		numAsteroids = 0,
 		hyperCount = 0,
+		invincibleCount = 0,
 		shootAudio = null,
 		ufoAudio = null,
 		thrustAudio = null,
 		explosionAudio = null,
 		asteroidHit = false,
 		cancelNextRequest = false,
-		shipHit = false;
+		shipHit = false,
+		shipInvincible = false;
 	
 	var collisionDetected = function(object1, object2){
 		var object1Radius = object1.getRadius() - 15;	//Subtracted 15 to make up for ship not being exactly circular
@@ -197,22 +199,26 @@ ASTEROIDS.screens['game-play'] = (function() {
 		
 		shootAudio = audio({
 			sound: 'sounds/asteroids_shoot.wav',
-			duration: 0
+			duration: 0,
+			volume: .5
 		});
 		
 		ufoAudio = audio({
 			sound: 'sounds/asteroids_saucer.wav',
-			duration: 0
+			duration: 0,
+			volume: .5
 		});
 		
 		thrustAudio = audio({
 			sound: 'sounds/asteroids_thrust.wav',
-			duration: 0
+			duration: 0,
+			volume: .9
 		});
 		
 		explosionAudio = audio({
 			sound: 'sounds/depthCharge.wav',
-			duration: 0
+			duration: 0,
+			volume: .5
 		});
 		
 		for(var i = 0; i < numAsteroids; i++){
@@ -281,7 +287,6 @@ ASTEROIDS.screens['game-play'] = (function() {
 				}
 			}
 			//size 2 asteroids split into 4 smaller ones
-//this is commented out because on my little screen it just became unplayable too fast
 			if(size === 2){
 				for(i = 0; i < 4; i++){
 					asteroidsArray.push(ASTEROIDS.graphics.Texture( {
@@ -301,30 +306,37 @@ ASTEROIDS.screens['game-play'] = (function() {
 		//end asteroid hit stuff
 		
 		//update the collisions between asteroid and ship
-		for(var i = 0; i < asteroidsArray.length; i++){
-			if(collisionDetected(ship, asteroidsArray[i])){
-//				pause += elapsedTime;
-				shipExplosion1.updatePos(ship.getX(), ship.getY());
-				shipExplosion2.updatePos(ship.getX(), ship.getY());
-				shipExplosion3.updatePos(ship.getX(), ship.getY());
-				for(var i = 0; i < 200; i++){
-					shipExplosion1.create();
-					if(i%2 === 0){
-						shipExplosion3.create();
-						shipExplosion2.create();
+		//we should definitely look at putting all of these for loops in functions...
+		if(!shipHit){
+			for(var i = 0; i < asteroidsArray.length; i++){
+				if(collisionDetected(ship, asteroidsArray[i])){
+					shipExplosion1.updatePos(ship.getX(), ship.getY());
+					shipExplosion2.updatePos(ship.getX(), ship.getY());
+					shipExplosion3.updatePos(ship.getX(), ship.getY());
+					for(var i = 0; i < 100; i++){
+						shipExplosion1.create();
+						if(i%2 === 0){
+							shipExplosion3.create();
+							shipExplosion2.create();
+						}
 					}
+					ship.shipHit();
+					shipHit = true;
+					shipInvincible = true;
 				}
-				ship.shipHit();
-				shipHit = true;
-				//console.log(ship.getX() + '  ' + ship.getY());
 			}
 		}
+		
 		if(shipHit){
 			pause += elapsedTime;
+			invincibleCount += elapsedTime;
 			//disappear for 1.5 seconds
-			if(pause >= 1500){
+			if(pause >= 1500 && shipInvincible){
 				ship.reset(elapsedTime);
-				pause = 0;
+				shipInvincible = false;
+			}
+			if(invincibleCount >= 4000){
+				invincibleCount = pause = 0;
 				shipHit = false;
 			}
 		}

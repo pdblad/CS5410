@@ -183,8 +183,8 @@ ASTEROIDS.graphics = (function() {
 		};
 		
 		that.shipHit = function(){
-			spec.width = 200;
-			spec.height = 200;
+			spec.width = 0;
+			spec.height = 0;
 			spec.rotateRate = 0;
 			spec.dx = 0;
 			spec.dy = 0;
