@@ -167,11 +167,7 @@ ASTEROIDS.graphics = (function() {
 //	        console.log("dy value: " + spec.dy);
 	        spec.fireThrusters = true;
 		};
-		
-		that.shoot = function(elapsedTime){
-			//Shoot bullets
-		};
-		
+				
 		that.asteroidMovement = function(direction, elapsedTime) {
 			if(direction % 2 == 0){
 				that.rotateRight(elapsedTime);
