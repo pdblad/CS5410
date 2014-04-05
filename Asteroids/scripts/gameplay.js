@@ -61,7 +61,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 	function initialize() {
 		console.log('game initializing...');
 		
-		numAsteroids = 10;
+		numAsteroids = 3;
 
 		ship = ASTEROIDS.graphics.Texture( {
 			image : ASTEROIDS.images['images/USU-Logo.png'],
@@ -250,25 +250,25 @@ ASTEROIDS.screens['game-play'] = (function() {
 			}
 			//size 2 asteroids split into 4 smaller ones
 //this is commented out because on my little screen it just became unplayable too fast
-//			if(size === 2){
-//				for(i = 0; i < 4; i++){
-//					asteroidsArray.push(ASTEROIDS.graphics.Texture( {
-//								image : ASTEROIDS.images['images/Asteroid2.png'],
-//								center : { x : x, y : y },
-//								width : 30, height : 30,
-//								rotation : 0,
-//								moveRate : Math.abs(Random.nextGaussian(75, 10)),			// pixels per second
-//								rotateRate : Random.nextRange(2, 6),	// Radians per second
-//								size : 2
-//							})
-//						);
-//					numAsteroids++;
-//				}
-//			}
+			if(size === 2){
+				for(i = 0; i < 4; i++){
+					asteroidsArray.push(ASTEROIDS.graphics.Texture( {
+								image : ASTEROIDS.images['images/Asteroid2.png'],
+								center : { x : x, y : y },
+								width : 30, height : 30,
+								rotation : 0,
+								moveRate : Math.abs(Random.nextGaussian(75, 10)),			// pixels per second
+								rotateRate : Random.nextRange(2, 6),	// Radians per second
+								size : 1
+							})
+						);
+					numAsteroids++;
+				}
+			}
 		}
 		//end asteroid hit stuff
 		
-		//update the collisions
+		//update the collisions between asteroid and ship
 		for(var i = 0; i < asteroidsArray.length; i++){
 			if(collisionDetected(ship, asteroidsArray[i])){
 //				pause += elapsedTime;
