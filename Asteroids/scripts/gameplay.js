@@ -334,12 +334,8 @@ ASTEROIDS.screens['game-play'] = (function() {
 			if(collisionDetected(ship, asteroidsArray[i])){
 				lifeArray.pop();
 				if(lifeArray.length == 0){
-					pause += elapsedTime;
-					//disappear for 1.5 seconds
-					if(pause >= 1500){
-						ASTEROIDS.game.showScreen('credits');
-					}
 					//Game Over and Restart Game
+					ASTEROIDS.game.showScreen('credits');
 				}
 				
 				shipExplosion1.updatePos(ship.getX(), ship.getY());
