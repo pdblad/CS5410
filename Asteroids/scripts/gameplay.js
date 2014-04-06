@@ -338,47 +338,29 @@ ASTEROIDS.screens['game-play'] = (function() {
 		if(!shipHit){
 			for(var i = 0; i < asteroidsArray.length; i++){
 				if(collisionDetected(ship, asteroidsArray[i])){
+					lifeArray.pop();
+					if(lifeArray.length == 0){
+						//Game Over and Restart Game
+						ASTEROIDS.game.showScreen('credits');
+					}
+					
 					shipExplosion1.updatePos(ship.getX(), ship.getY());
 					shipExplosion2.updatePos(ship.getX(), ship.getY());
 					shipExplosion3.updatePos(ship.getX(), ship.getY());
-					for(var i = 0; i < 100; i++){
+					for(var i = 0; i < 200; i++){
 						shipExplosion1.create();
 						if(i%2 === 0){
 							shipExplosion3.create();
 							shipExplosion2.create();
-						}			
+						}
+						ship.shipHit();
+						shipHit = true;
+						shipInvincible = true;
 					}
 				}
 			}
 		}
-		//end asteroid hit stuff
-		
-		//update the collisions
-		for(var i = 0; i < asteroidsArray.length; i++){
-			if(collisionDetected(ship, asteroidsArray[i])){
-				lifeArray.pop();
-				if(lifeArray.length == 0){
-					//Game Over and Restart Game
-					ASTEROIDS.game.showScreen('credits');
-				}
-				
-				shipExplosion1.updatePos(ship.getX(), ship.getY());
-				shipExplosion2.updatePos(ship.getX(), ship.getY());
-				shipExplosion3.updatePos(ship.getX(), ship.getY());
-				for(var i = 0; i < 200; i++){
-					shipExplosion1.create();
-					if(i%2 === 0){
-						shipExplosion3.create();
-						shipExplosion2.create();
-					}
-					ship.shipHit();
-					shipHit = true;
-					shipInvincible = true;
-				}
-			}
-		}
-		
-		if(shipHit){
+		else{
 			pause += elapsedTime;
 			invincibleCount += elapsedTime;
 			//disappear for 1.5 seconds
