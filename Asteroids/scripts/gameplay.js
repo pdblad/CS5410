@@ -16,6 +16,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		missile = null,
 		asteroid = null,
 		asteroidsArray = [],
+		lifeArray = [],
 		count = 0,
 		pause = 0,
 		missileCount = 0,
@@ -25,6 +26,8 @@ ASTEROIDS.screens['game-play'] = (function() {
 		ufoAudio = null,
 		thrustAudio = null,
 		explosionAudio = null,
+		scoreText = null,
+		lives = null,
 		asteroidHit = false,
 		cancelNextRequest = false,
 		shipHit = false;
@@ -47,12 +50,12 @@ ASTEROIDS.screens['game-play'] = (function() {
 	};
 	
 	var isSafe = function(x, y){
-		var safeRadius = 200;
+		var safeRadius = 300;
 		var safeDistance = false;
 		for(var i = 0; i < asteroidsArray.length; i++){
 			var xDistance = x - asteroidsArray[i].getX();
 			var yDistance = y - asteroidsArray[i].getY();
-			safeDistance = (Math.sqrt((xDistance*xDistance) + (yDistance*yDistance)) >= (safeRadius+asteroidsArray[i].getRadius()));
+			safeDistance = (Math.sqrt((xDistance*xDistance) + (yDistance*yDistance)) > (safeRadius+asteroidsArray[i].getRadius()));
 		}
 		
 		return safeDistance;
@@ -163,7 +166,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 			image : ASTEROIDS.images['images/fire.png'],
 			center : {x: 0, y: 0},
 			size: {mean: 30, std: 5},
-			speed : {mean: 100, stdev: 10},
+			speed : {mean: 300, stdev: 10},
 			lifetime: {mean: 2, stdev: 1}
 			}, ASTEROIDS.graphics
 		);
@@ -181,7 +184,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 			image : ASTEROIDS.images['images/blueFire.png'],
 			center : {x: 0, y: 0},
 			size: {mean: 30, std: 5},
-			speed : {mean: 20, stdev: 10},
+			speed : {mean: 100, stdev: 10},
 			lifetime: {mean: 2, stdev: 1}
 			}, ASTEROIDS.graphics
 		);
@@ -214,6 +217,25 @@ ASTEROIDS.screens['game-play'] = (function() {
 			sound: 'sounds/depthCharge.wav',
 			duration: 0
 		});
+				
+		scoreText = ASTEROIDS.graphics.Text({
+			text: 0,
+            font: '50px Arial, sans-serif',
+            fill: 'rgba(0, 0, 225, 0.5)',
+            stroke: 'rgba(255, 255, 255, 1)',
+            pos: {x: 20, y: 20},
+            rotation: 0
+		});
+		
+		for(var i = 0; i < 3; i++){
+			lifeArray.push(
+				lives = ASTEROIDS.graphics.Texture( {
+					image : ASTEROIDS.images['images/USU-Logo.png'],
+					center : { x : 200 + (i*75), y : 45 },
+					width : 50, height : 50
+				})
+			);
+		}
 		
 		for(var i = 0; i < numAsteroids; i++){
 			asteroidsArray.push(
@@ -245,6 +267,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 	//
 	function gameUpdate(elapsedTime){
 		ASTEROIDS.graphics.clear();
+
 		myKeyboard.update(elapsedTime);
 		
 		for(var i = 0; i < asteroidsArray.length; i++){
@@ -266,6 +289,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 			//add new asteroids
 			//size 3 asteroids split into 3 smaller ones
 			if(size === 3){
+				scoreText.updateScore20();
 				for(i = 0; i < 3; i++){
 					asteroidsArray.push(ASTEROIDS.graphics.Texture( {
 								image : ASTEROIDS.images['images/Asteroid2.png'],
@@ -281,29 +305,43 @@ ASTEROIDS.screens['game-play'] = (function() {
 				}
 			}
 			//size 2 asteroids split into 4 smaller ones
-//this is commented out because on my little screen it just became unplayable too fast
-//			if(size === 2){
-//				for(i = 0; i < 4; i++){
-//					asteroidsArray.push(ASTEROIDS.graphics.Texture( {
-//								image : ASTEROIDS.images['images/Asteroid2.png'],
-//								center : { x : x, y : y },
-//								width : 30, height : 30,
-//								rotation : 0,
-//								moveRate : Math.abs(Random.nextGaussian(75, 10)),			// pixels per second
-//								rotateRate : Random.nextRange(2, 6),	// Radians per second
-//								size : 2
-//							})
-//						);
-//					numAsteroids++;
-//				}
-//			}
+			//this is commented out because on my little screen it just became unplayable too fast
+			if(size === 2){
+				scoreText.updateScore50();
+				for(i = 0; i < 4; i++){
+					asteroidsArray.push(ASTEROIDS.graphics.Texture( {
+								image : ASTEROIDS.images['images/Asteroid2.png'],
+								center : { x : x, y : y },
+								width : 30, height : 30,
+								rotation : 0,
+								moveRate : Math.abs(Random.nextGaussian(75, 10)),			// pixels per second
+								rotateRate : Random.nextRange(2, 6),	// Radians per second
+								size : 1
+							})
+						);
+					numAsteroids++;
+				}
+			}
+			
+			if(size === 2){
+				scoreText.updateScore100();
+			}
 		}
 		//end asteroid hit stuff
 		
 		//update the collisions
 		for(var i = 0; i < asteroidsArray.length; i++){
 			if(collisionDetected(ship, asteroidsArray[i])){
-//				pause += elapsedTime;
+				lifeArray.pop();
+				if(lifeArray.length == 0){
+					pause += elapsedTime;
+					//disappear for 1.5 seconds
+					if(pause >= 1500){
+						ASTEROIDS.game.showScreen('credits');
+					}
+					//Game Over and Restart Game
+				}
+				
 				shipExplosion1.updatePos(ship.getX(), ship.getY());
 				shipExplosion2.updatePos(ship.getX(), ship.getY());
 				shipExplosion3.updatePos(ship.getX(), ship.getY());
@@ -368,7 +406,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		for(var i = 0; i < asteroidsArray.length; i++){
 			asteroidsArray[i].draw();
 		}
-		
+				
 		leftThruster.render();
 		rightThruster.render();
 		
@@ -387,6 +425,10 @@ ASTEROIDS.screens['game-play'] = (function() {
 		
 		//draw ship last to make exaust go behind it
 		ship.draw();
+		scoreText.drawText();
+		for(var i = 0; i < lifeArray.length; i++){
+			lifeArray[i].draw();
+		}
 	}
 	
 	//------------------------------------------------------------------

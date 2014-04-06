@@ -4,7 +4,7 @@ ASTEROIDS.screens['credits'] = (function() {
 	function initialize() {
 		document.getElementById('id-credits-back').addEventListener(
 			'click',
-			function() { ASTEROIDS.game.showScreen('main-menu'); },
+			function() { location.reload(); },
 			false);
 	}
 	

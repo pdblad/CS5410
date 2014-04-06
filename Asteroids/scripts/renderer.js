@@ -287,9 +287,35 @@ ASTEROIDS.graphics = (function() {
     function Text(spec) {
         var that = {};
 
-        that.updateRotation = function(angle) {
-            spec.rotation += angle;
-        };
+		that.updateScore20 = function(){
+			//Update score text by 20 for Large Asteroid
+			spec.text = spec.text + 20;
+		};
+		
+		that.updateScore50 = function(){
+			//Update score text by 50 for Medium Asteroid
+			spec.text = spec.text + 50;
+		};
+		
+		that.updateScore100 = function(){
+			//Update score text by 100 for Small Asteroid
+			spec.text = spec.text + 100;
+		};
+		
+		that.updateScore200 = function(){
+			//Update score text by 200 for Large Ship
+			spec.text = spec.text + 200;
+		};
+
+		that.updateScore1000 = function(){
+			//Update score text by 1000 for Small Ship
+			spec.text = spec.text + 1000;
+		};
+
+		that.clearScore = function(){
+			//Update score text based on coin picked
+			spec.text = 0;
+		};
 
         function measureTextHeight(spec) {
             context.save();
@@ -319,7 +345,7 @@ ASTEROIDS.graphics = (function() {
             return width;
         }
 
-        that.draw = function() {
+        that.drawText = function() {
             context.save();
 
             context.font = spec.font;
