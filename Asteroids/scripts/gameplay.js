@@ -221,7 +221,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		explosionAudio = audio({
 			sound: 'sounds/depthCharge.wav',
 			duration: 0,
-			volume: .5
+			volume: .7
 		});
 				
 		scoreText = ASTEROIDS.graphics.Text({
