@@ -327,6 +327,9 @@ ASTEROIDS.screens['game-play'] = (function() {
 					numAsteroids++;
 				}
 			}
+			
+			if(size === 1)
+				scoreText.updateScore100();
 		}
 		//end asteroid hit stuff
 		
