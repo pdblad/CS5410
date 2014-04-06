@@ -16,6 +16,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		missile = null,
 		asteroid = null,
 		asteroidsArray = [],
+		lifeArray = [],
 		count = 0,
 		pause = 0,
 		missileCount = 0,
@@ -26,6 +27,8 @@ ASTEROIDS.screens['game-play'] = (function() {
 		ufoAudio = null,
 		thrustAudio = null,
 		explosionAudio = null,
+		scoreText = null,
+		lives = null,
 		asteroidHit = false,
 		cancelNextRequest = false,
 		shipHit = false,
@@ -49,12 +52,12 @@ ASTEROIDS.screens['game-play'] = (function() {
 	};
 	
 	var isSafe = function(x, y){
-		var safeRadius = 200;
+		var safeRadius = 300;
 		var safeDistance = false;
 		for(var i = 0; i < asteroidsArray.length; i++){
 			var xDistance = x - asteroidsArray[i].getX();
 			var yDistance = y - asteroidsArray[i].getY();
-			safeDistance = (Math.sqrt((xDistance*xDistance) + (yDistance*yDistance)) >= (safeRadius+asteroidsArray[i].getRadius()));
+			safeDistance = (Math.sqrt((xDistance*xDistance) + (yDistance*yDistance)) > (safeRadius+asteroidsArray[i].getRadius()));
 		}
 		
 		return safeDistance;
@@ -165,7 +168,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 			image : ASTEROIDS.images['images/fire.png'],
 			center : {x: 0, y: 0},
 			size: {mean: 30, std: 5},
-			speed : {mean: 100, stdev: 10},
+			speed : {mean: 300, stdev: 10},
 			lifetime: {mean: 2, stdev: 1}
 			}, ASTEROIDS.graphics
 		);
@@ -183,7 +186,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 			image : ASTEROIDS.images['images/blueFire.png'],
 			center : {x: 0, y: 0},
 			size: {mean: 30, std: 5},
-			speed : {mean: 20, stdev: 10},
+			speed : {mean: 100, stdev: 10},
 			lifetime: {mean: 2, stdev: 1}
 			}, ASTEROIDS.graphics
 		);
@@ -220,6 +223,25 @@ ASTEROIDS.screens['game-play'] = (function() {
 			duration: 0,
 			volume: .5
 		});
+				
+		scoreText = ASTEROIDS.graphics.Text({
+			text: 0,
+            font: '50px Arial, sans-serif',
+            fill: 'rgba(0, 0, 225, 0.5)',
+            stroke: 'rgba(255, 255, 255, 1)',
+            pos: {x: 20, y: 20},
+            rotation: 0
+		});
+		
+		for(var i = 0; i < 3; i++){
+			lifeArray.push(
+				lives = ASTEROIDS.graphics.Texture( {
+					image : ASTEROIDS.images['images/USU-Logo.png'],
+					center : { x : 200 + (i*75), y : 45 },
+					width : 50, height : 50
+				})
+			);
+		}
 		
 		for(var i = 0; i < numAsteroids; i++){
 			asteroidsArray.push(
@@ -251,6 +273,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 	//
 	function gameUpdate(elapsedTime){
 		ASTEROIDS.graphics.clear();
+
 		myKeyboard.update(elapsedTime);
 		
 		for(var i = 0; i < asteroidsArray.length; i++){
@@ -268,10 +291,11 @@ ASTEROIDS.screens['game-play'] = (function() {
 			for(var i = 0; i < 10; i++)
 				asteroidExplosion.create();
 			asteroidHit = false;
-//			console.log('Asteroid Hit!  ' + asteroidHit.x);
+			
 			//add new asteroids
 			//size 3 asteroids split into 3 smaller ones
 			if(size === 3){
+				scoreText.updateScore20();
 				for(i = 0; i < 3; i++){
 					asteroidsArray.push(ASTEROIDS.graphics.Texture( {
 								image : ASTEROIDS.images['images/Asteroid2.png'],
@@ -288,6 +312,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 			}
 			//size 2 asteroids split into 4 smaller ones
 			if(size === 2){
+				scoreText.updateScore50();
 				for(i = 0; i < 4; i++){
 					asteroidsArray.push(ASTEROIDS.graphics.Texture( {
 								image : ASTEROIDS.images['images/Asteroid2.png'],
@@ -318,7 +343,30 @@ ASTEROIDS.screens['game-play'] = (function() {
 						if(i%2 === 0){
 							shipExplosion3.create();
 							shipExplosion2.create();
-						}
+						}			
+					}
+				}
+			}
+		}
+		//end asteroid hit stuff
+		
+		//update the collisions
+		for(var i = 0; i < asteroidsArray.length; i++){
+			if(collisionDetected(ship, asteroidsArray[i])){
+				lifeArray.pop();
+				if(lifeArray.length == 0){
+					//Game Over and Restart Game
+					ASTEROIDS.game.showScreen('credits');
+				}
+				
+				shipExplosion1.updatePos(ship.getX(), ship.getY());
+				shipExplosion2.updatePos(ship.getX(), ship.getY());
+				shipExplosion3.updatePos(ship.getX(), ship.getY());
+				for(var i = 0; i < 200; i++){
+					shipExplosion1.create();
+					if(i%2 === 0){
+						shipExplosion3.create();
+						shipExplosion2.create();
 					}
 					ship.shipHit();
 					shipHit = true;
@@ -380,7 +428,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		for(var i = 0; i < asteroidsArray.length; i++){
 			asteroidsArray[i].draw();
 		}
-		
+				
 		leftThruster.render();
 		rightThruster.render();
 		
@@ -399,6 +447,10 @@ ASTEROIDS.screens['game-play'] = (function() {
 		
 		//draw ship last to make exaust go behind it
 		ship.draw();
+		scoreText.drawText();
+		for(var i = 0; i < lifeArray.length; i++){
+			lifeArray[i].draw();
+		}
 	}
 	
 	//------------------------------------------------------------------

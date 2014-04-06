@@ -10,17 +10,15 @@ body
 	background-size: cover;
 }
 
-h1
+h2
 {
-	color: #000000;	
-	background: rgba(245, 245, 245, 0.5)
+	text-align: center;
 }
 
 p
 {
 	color: #000000;
 	text-align: center;
-	background: rgba(245, 245, 245, 0.5)
 }
 
 #game
@@ -69,7 +67,7 @@ ul.menu li
 
 ul.menu li button
 {
-	font-family: Times New Roman, cursive, sans-serif;
+	font-family: Impact, fantasy;
 	font-size: 0.6em;
 	color: #FFFFFF;
 	width: 10em;
@@ -95,6 +93,15 @@ ul.menu li button:active
 	font-size: 1em;
 	text-align: center;
 }
+#help
+{
+	background: rgba(245, 245, 245, 0.5);
+}
+
+#help li
+{
+	font-size: 0.5em;
+}
 
 #high-scores ol
 {
@@ -113,4 +120,16 @@ ul.menu li button:active
 #about p
 {
 	text-align: center;
+}
+
+#credits
+{
+	text-align: center;
+	color: #FFFFFF;
+}
+
+#credits p
+{
+	text-align: center;
+	color: #FFFFFF;
 }
