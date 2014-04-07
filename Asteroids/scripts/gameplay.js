@@ -24,6 +24,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		numAsteroids = 0,
 		hyperCount = 0,
 		invincibleCount = 0,
+		newLife = 10000,
 		shootAudio = null,
 		ufoAudio = null,
 		thrustAudio = null,
@@ -327,6 +328,18 @@ ASTEROIDS.screens['game-play'] = (function() {
 
 		myKeyboard.update(elapsedTime);
 		
+		if(scoreText.getScore() >= newLife){
+			lifeArray.push(
+					lives = ASTEROIDS.graphics.Texture( {
+						image : ASTEROIDS.images['images/USU-Logo.png'],
+						center : { x : 450 + (lifeArray.length*75), y : 45 },
+						width : 50, height : 50
+					})
+				);
+
+			newLife+=10000;
+		}
+		
 		//Start new level if all current asteroids (and UFO's) are destroyed
 		if(asteroidsArray.length == 0){
 			levelNumText.nextLevel();
@@ -414,6 +427,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 					if(lifeArray.length == 0){
 						//Game Over and Restart Game
 						ASTEROIDS.game.showScreen('credits');
+						cancelNextRequest = true;
 					}
 					
 					shipExplosion1.updatePos(ship.getX(), ship.getY());
