@@ -168,17 +168,38 @@ ASTEROIDS.graphics = (function() {
 	        spec.fireThrusters = true;
 		};
 				
-		that.asteroidMovement = function(direction, elapsedTime) {
-			if(direction % 2 == 0){
+		that.asteroidMovement = function(elapsedTime) {
+			if(spec.direction == 1){
 				that.rotateRight(elapsedTime);
 				that.moveRight(elapsedTime);
 				that.moveDown(elapsedTime);
 			}
-			else{
-				that.rotateLeft(elapsedTime);
+			else if(spec.direction == 2){
+				that.rotateRight(elapsedTime);
+				that.moveLeft(elapsedTime);
 				that.moveLeft(elapsedTime);
 				that.moveUp(elapsedTime);
 			}
+			else if(spec.direction == 3){
+				that.rotateLeft(elapsedTime);
+				that.moveRight(elapsedTime);
+				that.moveUp(elapsedTime);
+				that.moveUp(elapsedTime);
+				that.moveUp(elapsedTime);
+			}
+			else if(spec.direction == 4){
+				that.rotateLeft(elapsedTime);
+				that.moveLeft(elapsedTime);
+				that.moveLeft(elapsedTime);
+				that.moveDown(elapsedTime);
+			}
+			else{
+				that.rotateRight(elapsedTime);
+				that.moveRight(elapsedTime);
+				that.moveRight(elapsedTime);
+				that.moveUp(elapsedTime);
+			}
+
 			wrap();
 		};
 		
@@ -192,24 +213,15 @@ ASTEROIDS.graphics = (function() {
 		};
 		
 		that.reset = function(elapsedTime){
-//			if(resetCount <= 5){
-				spec.image = ASTEROIDS.images['images/USU-Logo.png'];
-				spec.center.x = ASTEROIDS.screenWidth/2;
-				spec.center.y = ASTEROIDS.screenHeight/2;
-				spec.width = 70;
-				spec.height = 70;
-				spec.rotation = -3.14;
-				spec.rotateRate = 3.14159;
-				spec.dx = 0;
-				spec.dy = 0;
-//			}
-//			//Once you die three times, this exits to the main menu
-//			else{
-//				ASTEROIDS.screens['game-play'].cancelNextRequest = true;
-//				ASTEROIDS.game.showScreen('main-menu');
-//				resetCount = 0;
-//			}
-//			resetCount++;
+			spec.image = ASTEROIDS.images['images/USU-Logo.png'];
+			spec.center.x = ASTEROIDS.screenWidth/2;
+			spec.center.y = ASTEROIDS.screenHeight/2;
+			spec.width = 70;
+			spec.height = 70;
+			spec.rotation = -3.14;
+			spec.rotateRate = 3.14159;
+			spec.dx = 0;
+			spec.dy = 0;
 		};
 		
 		that.updatePos = function(elapsedTime){

@@ -67,7 +67,7 @@ function particleSystem(spec, graphics) {
 				
 				//
 				// Rotate proportional to its speed
-				particle.rotation += particle.speed / 500;
+				//particle.rotation += particle.speed / 500;
 				
 				//
 				// If the lifetime has expired, identify it for removal

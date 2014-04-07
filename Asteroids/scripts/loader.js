@@ -45,6 +45,7 @@ window.addEventListener('load', function() {
                     'preload!images/blueFire.png',
                     'preload!images/fire.png',
                     'preload!images/smoke.png',
+                    'preload!images/star.png',
                     'preload!images/BYU-Logo.png',
                     'preload!images/UofU-Logo.png',
 //                    'preload!sounds/asteroids_saucer.wav',
