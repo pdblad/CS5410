@@ -31,6 +31,8 @@ ASTEROIDS.screens['game-play'] = (function() {
 		shipExplodeAudio = null,
 		hyperAudio = null,
 		scoreText = null,
+		levelText = null,
+		levelNumText = null,
 		lives = null,
 		asteroidHit = false,
 		cancelNextRequest = false,
@@ -263,11 +265,29 @@ ASTEROIDS.screens['game-play'] = (function() {
             rotation: 0
 		});
 		
+		levelText = ASTEROIDS.graphics.Text({
+			text: "Level",
+            font: '50px Arial, sans-serif',
+            fill: 'rgba(0, 0, 225, 0.5)',
+            stroke: 'rgba(255, 255, 255, 1)',
+            pos: {x: 200, y: 20},
+            rotation: 0
+		});
+		
+		levelNumText = ASTEROIDS.graphics.Text({
+			text: 1,
+            font: '50px Arial, sans-serif',
+            fill: 'rgba(0, 0, 225, 0.5)',
+            stroke: 'rgba(255, 255, 255, 1)',
+            pos: {x: 330, y: 20},
+            rotation: 0
+		});
+		
 		for(var i = 0; i < 3; i++){
 			lifeArray.push(
 				lives = ASTEROIDS.graphics.Texture( {
 					image : ASTEROIDS.images['images/USU-Logo.png'],
-					center : { x : 200 + (i*75), y : 45 },
+					center : { x : 450 + (i*75), y : 45 },
 					width : 50, height : 50
 				})
 			);
@@ -280,7 +300,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 					center : { x : Random.nextRange(50, ASTEROIDS.screenWidth), y : ASTEROIDS.screenHeight },
 					width : 125, height : 125,
 					rotation : 0,
-					moveRate : Math.abs(Random.nextGaussian(75, 10)),			// pixels per second
+					moveRate : Math.abs(Random.nextGaussian(50, 10)),			// pixels per second
 					rotateRate : Random.nextRange(2, 6),	// Radians per second
 					size : 3,
 					direction : Random.nextRange(1,5)
@@ -306,6 +326,26 @@ ASTEROIDS.screens['game-play'] = (function() {
 		ASTEROIDS.graphics.clear();
 
 		myKeyboard.update(elapsedTime);
+		
+		//Start new level if all current asteroids (and UFO's) are destroyed
+		if(asteroidsArray.length == 0){
+			levelNumText.nextLevel();
+			numAsteroids++;
+			for(var i = 0; i < numAsteroids; i++){
+				asteroidsArray.push(
+					asteroid = ASTEROIDS.graphics.Texture( {
+						image : ASTEROIDS.images['images/Asteroid2.png'],
+						center : { x : Random.nextRange(50, ASTEROIDS.screenWidth), y : ASTEROIDS.screenHeight },
+						width : 125, height : 125,
+						rotation : 0,
+						moveRate : Math.abs(Random.nextGaussian(50, 10)),			// pixels per second
+						rotateRate : Random.nextRange(2, 6),	// Radians per second
+						size : 3,
+						direction : Random.nextRange(1,5)
+					})
+				);
+			}
+		}
 		
 		for(var i = 0; i < asteroidsArray.length; i++){
 			asteroidsArray[i].asteroidMovement(elapsedTime);
@@ -333,13 +373,12 @@ ASTEROIDS.screens['game-play'] = (function() {
 								center : { x : x, y : y },
 								width : 75, height : 75,
 								rotation : 0,
-								moveRate : Math.abs(Random.nextGaussian(75, 10)),			// pixels per second
+								moveRate : Math.abs(Random.nextGaussian(50, 10)),			// pixels per second
 								rotateRate : Random.nextRange(2, 6),	// Radians per second
 								size : 2,
 								direction : Random.nextRange(1,5)
 							})
 						);
-					numAsteroids++;
 				}
 			}
 			//size 2 asteroids split into 4 smaller ones
@@ -351,13 +390,12 @@ ASTEROIDS.screens['game-play'] = (function() {
 								center : { x : x, y : y },
 								width : 30, height : 30,
 								rotation : 0,
-								moveRate : Math.abs(Random.nextGaussian(75, 10)),			// pixels per second
+								moveRate : Math.abs(Random.nextGaussian(50, 10)),			// pixels per second
 								rotateRate : Random.nextRange(2, 6),	// Radians per second
 								size : 1,
 								direction : Random.nextRange(1,5)
 							})
 						);
-					numAsteroids++;
 				}
 			}
 			
@@ -469,6 +507,8 @@ ASTEROIDS.screens['game-play'] = (function() {
 		//draw ship last to make exaust go behind it
 		ship.draw();
 		scoreText.drawText();
+		levelText.drawText();
+		levelNumText.drawText();
 		for(var i = 0; i < lifeArray.length; i++){
 			lifeArray[i].draw();
 		}
