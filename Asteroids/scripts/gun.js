@@ -134,9 +134,9 @@ function gun(spec, graphics) {
                 for(var i = 0; i < asteroids.length; i++){
                 	if (asteroidHit(particle.center.x, particle.center.y, particle.size/2, asteroids[i].getX(), asteroids[i].getY(), asteroids[i].getWidth()/2)) {
                     	removeMe.push(value);
-//                    	asteroids.splice(i, 1);
-                    	asteroidPos = asteroids[i].removeAsteroid();
+                    	asteroidPos = asteroids[i].getPos();
                     	asteroidSize = asteroids[i].getSize();
+                    	asteroids.splice(i, 1);
                     	hit = true;
                     	//add particle.value to the score
                     	if (particle.value === -1){

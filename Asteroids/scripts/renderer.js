@@ -71,6 +71,10 @@ ASTEROIDS.graphics = (function() {
 			return spec.center.y;
 		};
 		
+		that.getPos = function(){
+			return spec.center;
+		};
+		
 		that.getRotation = function(){
 			return spec.rotation;
 		};
@@ -298,6 +302,10 @@ ASTEROIDS.graphics = (function() {
     function Text(spec) {
         var that = {};
 
+        that.getX = function(){
+        	return spec.pos.x;
+        };
+        
 		that.updateScore20 = function(){
 			//Update score text by 20 for Large Asteroid
 			spec.text = spec.text + 20;
@@ -323,12 +331,11 @@ ASTEROIDS.graphics = (function() {
 			spec.text = spec.text + 1000;
 		};
 
-		that.clearScore = function(){
-			//Update score text based on coin picked
-			spec.text = 0;
+		that.nextLevel = function(){
+			spec.text = spec.text + 1;
 		};
-
-        function measureTextHeight(spec) {
+		
+		function measureTextHeight(spec) {
             context.save();
 
             context.font = spec.font;
