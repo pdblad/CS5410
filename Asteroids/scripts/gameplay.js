@@ -116,7 +116,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 			image : ASTEROIDS.images['images/BYU-Logo.png'],
 			center : {x : Random.nextRange(50, ASTEROIDS.screenWidth), y : Random.nextRange(50, ASTEROIDS.screenHeight)},
 			width : 80, height : 80,
-			rotation : -3.14,
+			rotation : 0,
 			moveRate : 200,
 			rotateRate : 3.14159,
 			dx : 0,
@@ -128,11 +128,11 @@ ASTEROIDS.screens['game-play'] = (function() {
 			image : ASTEROIDS.images['images/UofU-Logo.png'],
 			center : {x : Random.nextRange(50, ASTEROIDS.screenWidth), y : Random.nextRange(50, ASTEROIDS.screenHeight)},
 			width : 80, height : 80,
-			rotation : -3.14,
+			rotation : 0,
 			moveRate : 200,
 			rotateRate : 3.14159,
-			dx : 0,
-			dy : 0,
+			dx : 3,
+			dy : 3,
 			fireThrusters : false
 		});
 		
@@ -149,7 +149,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		leftThruster = particleSystem({
 			image : ASTEROIDS.images['images/blueFire.png'],
 			center: {x: ship.getLeftThrusterPos().x, y: ship.getLeftThrusterPos().y},
-			size: {mean: 10, std: 4},
+			size: {mean: 20, std: 4},
 			speed: {mean: 10, stdev: 2},
 			lifetime: {mean: 2, stdev: 1}
 			}, ASTEROIDS.graphics
@@ -158,7 +158,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		rightThruster = particleSystem({
 			image : ASTEROIDS.images['images/blueFire.png'],
 			center : {x: ship.getRightThrusterPos().x, y: ship.getRightThrusterPos().y},
-			size: {mean: 10, std: 4},
+			size: {mean: 20, std: 4},
 			speed : {mean: 10, stdev: 2},
 			lifetime: {mean: 2, stdev: 1}
 			}, ASTEROIDS.graphics
@@ -221,7 +221,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		explosionAudio = audio({
 			sound: 'sounds/depthCharge.wav',
 			duration: 0,
-			volume: .7
+			volume: .8
 		});
 				
 		scoreText = ASTEROIDS.graphics.Text({
@@ -327,7 +327,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 					numAsteroids++;
 				}
 			}
-			
+			//add score for smaller size
 			if(size === 1)
 				scoreText.updateScore100();
 		}
@@ -374,22 +374,22 @@ ASTEROIDS.screens['game-play'] = (function() {
 			}
 		}
 		
-		//update all 3 ships
-		enemyShipEasy.updateEnemy('easy', elapsedTime);
-		enemyShipHard.updateEnemy('hard', elapsedTime);
-		ship.updatePos();
-
 		//only update thruster specs if the thruster button is hit
 		if(ship.getThrusterStatus()){
 			leftThruster.updatePos(ship.getLeftThrusterPos().x, ship.getLeftThrusterPos().y);
 			rightThruster.updatePos(ship.getRightThrusterPos().x, ship.getRightThrusterPos().y);
-			for(var i = 0; i < 10; i++){
+			for(var i = 0; i < 2; i++){
 				leftThruster.create();
 				rightThruster.create();
 			}
 			thrustAudio.play();
 			ship.setThrusterStatus(false);
 		}
+		
+		//update all 3 ships
+		enemyShipEasy.updateEnemy('easy', elapsedTime);//updateEnemy('easy', elapsedTime);
+		enemyShipHard.updateEnemy('hard', elapsedTime);//updateEnemy('hard', elapsedTime);
+		ship.updatePos();
 		
 		//update particle systems
 		leftThruster.update(elapsedTime/1000);
@@ -420,18 +420,20 @@ ASTEROIDS.screens['game-play'] = (function() {
 		//draw all bullet particles
 		missile.render();
 		
-		//draw enemy ships
-		enemyShipEasy.draw();
-		enemyShipHard.draw();
-		
 		//draw ship explosion particles and asteroid explosion
 		shipExplosion1.render();
 		shipExplosion2.render();
 		shipExplosion3.render();
 		asteroidExplosion.render();
 		
+		//draw enemy ships
+		enemyShipEasy.draw();
+		enemyShipHard.draw();
+		
 		//draw ship last to make exaust go behind it
 		ship.draw();
+		
+		//scoring text
 		scoreText.drawText();
 		for(var i = 0; i < lifeArray.length; i++){
 			lifeArray[i].draw();

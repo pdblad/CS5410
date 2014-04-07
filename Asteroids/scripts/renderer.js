@@ -30,7 +30,9 @@ ASTEROIDS.graphics = (function() {
 	function Texture(spec) {
 		var that = {};
 		
-		var resetCount = 0;
+		var resetCount = 0,
+			nextPosCount = 0,
+			rotateCount = 0;
 
 		var wrap = function(){
 			var xMax = ASTEROIDS.screenWidth, yMax = ASTEROIDS.screenHeight;
@@ -212,7 +214,7 @@ ASTEROIDS.graphics = (function() {
 //			resetCount++;
 		};
 		
-		that.updatePos = function(elapsedTime){
+		that.updatePos = function(){
 			spec.center.x += spec.dx;
 			spec.center.y += spec.dy;
 			//this is friction, uncomment if friction is wanted
@@ -221,21 +223,27 @@ ASTEROIDS.graphics = (function() {
 			wrap();
 		};
 		
-		that.updateEnemy = function(difficulty, elapsedTime){
-			//that.rotateRight(elapsedTime);
-			var randomnumber=Math.floor(Math.random()*4);
-			if(randomnumber === 0)
-				that.fireThrusters(elapsedTime);	
-			else if(randomnumber === 1){
-				for(var i = 0; i<10; i++)
+		that.updateEnemy = function(diff, elapsedTime){
+			nextPosCount += elapsedTime;
+			rotateCount += elapsedTime;
+			var num;
+			//pick a new direction every 5 seconds
+			if(nextPosCount >= 5000){
+				var num = Math.floor(Math.random() * (3 - 1) + 1);
+				nextPosCount = 0;			
+			}
+			//for n seconds rotate that direction
+			if(rotateCount <= 10000){
+				if(num === 1)
+					that.rotateRight(elapsedTime);
+				else
 					that.rotateLeft(elapsedTime);
 			}
-			else if (randomnumber === 2){
-				for(var i = 0; i<10; i++)
-					that.rotateRight(elapsedTime);
-			}
-			else{}
-			that.updatePos(elapsedTime);
+			if(rotateCount >= 10000)
+				rotateCount = 0;
+			spec.center.x += Math.cos(spec.rotation) + spec.dx;
+			spec.center.y += -Math.sin(spec.rotation) + spec.dy;
+			wrap();
 		};
 		
 		that.moveTo = function(x, y) {
