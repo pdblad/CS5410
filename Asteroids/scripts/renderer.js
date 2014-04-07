@@ -31,8 +31,7 @@ ASTEROIDS.graphics = (function() {
 		var that = {};
 		
 		var resetCount = 0,
-			nextPosCount = 0,
-			rotateCount = 0;
+			enemyFireCount = 0;
 
 		var wrap = function(){
 			var xMax = ASTEROIDS.screenWidth, yMax = ASTEROIDS.screenHeight;
@@ -235,26 +234,18 @@ ASTEROIDS.graphics = (function() {
 			wrap();
 		};
 		
-		that.updateEnemy = function(diff, elapsedTime){
-			nextPosCount += elapsedTime;
-			rotateCount += elapsedTime;
-			var num;
-			//pick a new direction every 5 seconds
-			if(nextPosCount >= 5000){
-				var num = Math.floor(Math.random() * (3 - 1) + 1);
-				nextPosCount = 0;			
+		that.updateEnemy = function(ship, gun, elapsedTime){
+			spec.center.x += (spec.speed * spec.direction.x);
+			spec.center.y += (spec.speed * spec.direction.y);
+			//fire every 2 seconds
+			enemyFireCount += elapsedTime;
+			if(enemyFireCount >= 2000){
+				gun.updatePos({x: ship.getGunPos().x, y: ship.getGunPos().y}, ship.getRotation());
+				gun.updatePos({x: ship.getGunPos().x, y: ship.getGunPos().y}, ship.getRotation());
+				
+				gun.create();
+				enemyFireCount = 0;
 			}
-			//for n seconds rotate that direction
-			if(rotateCount <= 10000){
-				if(num === 1)
-					that.rotateRight(elapsedTime);
-				else
-					that.rotateLeft(elapsedTime);
-			}
-			if(rotateCount >= 10000)
-				rotateCount = 0;
-			spec.center.x += Math.cos(spec.rotation) + spec.dx;
-			spec.center.y += -Math.sin(spec.rotation) + spec.dy;
 			wrap();
 		};
 		
