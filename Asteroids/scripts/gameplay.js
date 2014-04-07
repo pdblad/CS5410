@@ -13,6 +13,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		shipExplosion2 = null,
 		shipExplosion3 = null,
 		asteroidExplosion = null,
+		hyperExplode = null,
 		missile = null,
 		asteroid = null,
 		asteroidsArray = [],
@@ -27,6 +28,8 @@ ASTEROIDS.screens['game-play'] = (function() {
 		ufoAudio = null,
 		thrustAudio = null,
 		explosionAudio = null,
+		shipExplodeAudio = null,
+		hyperAudio = null,
 		scoreText = null,
 		lives = null,
 		asteroidHit = false,
@@ -65,6 +68,12 @@ ASTEROIDS.screens['game-play'] = (function() {
 	
 	var hyperJump = function(){
 		if(ASTEROIDS.hyperReady){
+			hyperExplode.updatePos(ship.getX(), ship.getY());
+			hyperAudio.play();
+			for(var i = 0; i < 100; i++){
+				hyperExplode.create();
+			}
+			
 			var x = Random.nextRange(0, ASTEROIDS.screenWidth); 
 			var y = Random.nextRange(0, ASTEROIDS.screenHeight);
 	
@@ -163,6 +172,15 @@ ASTEROIDS.screens['game-play'] = (function() {
 			lifetime: {mean: 2, stdev: 1}
 			}, ASTEROIDS.graphics
 		);
+		
+		hyperExplode = particleSystem({
+			image : ASTEROIDS.images['images/star.png'],
+			center : {x: 0, y: 0},
+			size: {mean: 5, std: 4},
+			speed : {mean: 300, stdev: 10},
+			lifetime: {mean: 2, stdev: 1}
+			}, ASTEROIDS.graphics
+		);
 
 		shipExplosion1 = particleSystem({
 			image : ASTEROIDS.images['images/fire.png'],
@@ -223,6 +241,18 @@ ASTEROIDS.screens['game-play'] = (function() {
 			duration: 0,
 			volume: .7
 		});
+		
+		shipExplodeAudio = audio({
+			sound: 'sounds/ship_explode.wav',
+			duration: 0,
+			volume: .7
+		});
+		
+		hyperAudio = audio({
+			sound: 'sounds/hyperJump.wav',
+			duration: 0,
+			volume: .5
+		});
 				
 		scoreText = ASTEROIDS.graphics.Text({
 			text: 0,
@@ -252,7 +282,8 @@ ASTEROIDS.screens['game-play'] = (function() {
 					rotation : 0,
 					moveRate : Math.abs(Random.nextGaussian(75, 10)),			// pixels per second
 					rotateRate : Random.nextRange(2, 6),	// Radians per second
-					size : 3
+					size : 3,
+					direction : Random.nextRange(1,5)
 				})
 			);
 		}
@@ -277,7 +308,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		myKeyboard.update(elapsedTime);
 		
 		for(var i = 0; i < asteroidsArray.length; i++){
-			asteroidsArray[i].asteroidMovement(i, elapsedTime);
+			asteroidsArray[i].asteroidMovement(elapsedTime);
 		}
 		
 		//asteroidHit === true then this code does stuff to make explosion there
@@ -304,7 +335,8 @@ ASTEROIDS.screens['game-play'] = (function() {
 								rotation : 0,
 								moveRate : Math.abs(Random.nextGaussian(75, 10)),			// pixels per second
 								rotateRate : Random.nextRange(2, 6),	// Radians per second
-								size : 2
+								size : 2,
+								direction : Random.nextRange(1,5)
 							})
 						);
 					numAsteroids++;
@@ -321,7 +353,8 @@ ASTEROIDS.screens['game-play'] = (function() {
 								rotation : 0,
 								moveRate : Math.abs(Random.nextGaussian(75, 10)),			// pixels per second
 								rotateRate : Random.nextRange(2, 6),	// Radians per second
-								size : 1
+								size : 1,
+								direction : Random.nextRange(1,5)
 							})
 						);
 					numAsteroids++;
@@ -338,6 +371,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		if(!shipHit){
 			for(var i = 0; i < asteroidsArray.length; i++){
 				if(collisionDetected(ship, asteroidsArray[i])){
+					shipExplodeAudio.play();
 					lifeArray.pop();
 					if(lifeArray.length == 0){
 						//Game Over and Restart Game
@@ -399,6 +433,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		shipExplosion2.update(elapsedTime/1000);
 		shipExplosion3.update(elapsedTime/1000);
 		asteroidExplosion.update(elapsedTime/1000);
+		hyperExplode.update(elapsedTime/1000);
 	}
 	
 	//This is the main render function where various frameworks are rendered
@@ -429,6 +464,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		shipExplosion2.render();
 		shipExplosion3.render();
 		asteroidExplosion.render();
+		hyperExplode.render();
 		
 		//draw ship last to make exaust go behind it
 		ship.draw();
