@@ -334,6 +334,10 @@ ASTEROIDS.graphics = (function() {
         	return spec.text;
         };
         
+        that.getText = function(){
+        	return spec.text;
+        };
+        
 		that.updateScore20 = function(){
 			//Update score text by 20 for Large Asteroid
 			spec.text = spec.text + 20;

@@ -30,6 +30,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		invincibleCount = 0,
 		gameTimer = 0,
 		newLife = 10000,
+		currLevelScore = 0,
 		shootAudio = null,
 		ufoAudio = null,
 		thrustAudio = null,
@@ -44,7 +45,9 @@ ASTEROIDS.screens['game-play'] = (function() {
 		cancelNextRequest = false,
 		shipHit = false,
 		shipInvincible = false,
-		ufoHit = false;
+		ufoHit = false,
+		easyAdded = false,
+		hardAdded = false;
 	
 	var collisionDetected = function(object1, object2){
 		var object1Radius = object1.getRadius() - 15;	//Subtracted 15 to make up for ship not being exactly circular
@@ -267,7 +270,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		asteroidExplosion = particleSystem({
 			image: ASTEROIDS.images['images/Asteroid2.png'],
 			center: {x: 0, y: 0},
-			size: {mean: 10, std: 5},
+			size: {mean: 5, std: 1},
 			speed: {mean: 200, stdev: 10},
 			lifetime: {mean: 2, stdev: 1}
 			}, ASTEROIDS.graphics
@@ -371,12 +374,6 @@ ASTEROIDS.screens['game-play'] = (function() {
 			// Then, return to the main menu
 			ASTEROIDS.game.showScreen('main-menu');
 		});
-		
-		//add this stuff after certain ammount of time, make sure the same difficulty gun is matched with the right ship
-		enemyArray.push(enemyShipHard);
-		enemyArray.push(enemyShipEasy);
-		enemyGunArray.push(enemyGunHard);
-		enemyGunArray.push(enemyGunEasy);
 	}
 
 	//This is the main update function where various frameworks can be updated
@@ -401,6 +398,8 @@ ASTEROIDS.screens['game-play'] = (function() {
 		//Start new level if all current asteroids (and UFO's) are destroyed
 		if(asteroidsArray.length == 0){
 			levelNumText.nextLevel();
+			currLevelScore = 0;
+			easyAdded = false;
 			numAsteroids++;
 			for(var i = 0; i < numAsteroids; i++){
 				asteroidsArray.push(
@@ -438,6 +437,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 			//size 3 asteroids split into 3 smaller ones
 			if(size === 3){
 				scoreText.updateScore20();
+				currLevelScore += 20;
 				for(i = 0; i < 3; i++){
 					asteroidsArray.push(ASTEROIDS.graphics.Texture( {
 								image : ASTEROIDS.images['images/Asteroid2.png'],
@@ -455,6 +455,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 			//size 2 asteroids split into 4 smaller ones
 			if(size === 2){
 				scoreText.updateScore50();
+				currLevelScore += 50;
 				for(i = 0; i < 4; i++){
 					asteroidsArray.push(ASTEROIDS.graphics.Texture( {
 								image : ASTEROIDS.images['images/Asteroid2.png'],
@@ -470,8 +471,10 @@ ASTEROIDS.screens['game-play'] = (function() {
 				}
 			}
 			//add score for smaller size
-			if(size === 1)
+			if(size === 1){
 				scoreText.updateScore100();
+				currLevelScore += 100;
+			}
 		}
 		//end asteroid hit stuff
 		
@@ -501,7 +504,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 			pause += elapsedTime;
 			invincibleCount += elapsedTime;
 			//disappear for 1.5 seconds
-			if(pause >= 1500 && shipInvincible){
+			if(pause >= 1000 && shipInvincible){
 				ship.reset(elapsedTime);
 				shipInvincible = false;
 			}
@@ -541,6 +544,20 @@ ASTEROIDS.screens['game-play'] = (function() {
 		shipExplosion3.update(elapsedTime/1000);
 		asteroidExplosion.update(elapsedTime/1000);
 		hyperExplode.update(elapsedTime/1000);
+		
+		if(currLevelScore >= 1000 && !easyAdded){
+			ufoAudio.play();
+			enemyArray.push(enemyShipEasy);
+			enemyGunArray.push(enemyGunEasy);
+			easyAdded = true;
+		}
+		
+		if(scoreText.getScore() >= 20000 && !hardAdded){
+			ufoAudio.play();
+			enemyArray.push(enemyShipHard);
+			enemyGunArray.push(enemyGunHard);
+			hardAdded = true;
+		}
 	}
 	
 	//This is the main render function where various frameworks are rendered
