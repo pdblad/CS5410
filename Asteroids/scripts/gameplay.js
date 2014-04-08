@@ -554,8 +554,9 @@ ASTEROIDS.screens['game-play'] = (function() {
 		hyperExplode.render();
 		
 		//draw enemy ships
-		enemyShipEasy.draw();
-		enemyShipHard.draw();
+		for(var i = 0; i < enemyArray.length; i++){
+			enemyArray[i].draw();
+		}
 		
 		//draw ship last to make exaust go behind it
 		ship.draw();
