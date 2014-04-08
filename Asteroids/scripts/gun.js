@@ -8,7 +8,7 @@ function gun(spec, graphics) {
             nextName = 1, // unique identifier for the next particle
             particles = {};	// Set of all active particles
     
-    var asteroidHit = function(x1, y1, r1, x2, y2, r2) {
+    var collision = function(x1, y1, r1, x2, y2, r2) {
         var distance = Math.sqrt(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)));
         return distance < (r1 + r2);
     };
@@ -132,19 +132,12 @@ function gun(spec, graphics) {
             if (particles.hasOwnProperty(value)) {
                 particle = particles[value];
                 for(var i = 0; i < asteroids.length; i++){
-                	if (asteroidHit(particle.center.x, particle.center.y, particle.size/2, asteroids[i].getX(), asteroids[i].getY(), asteroids[i].getWidth()/2)) {
+                	if (collision(particle.center.x, particle.center.y, particle.size/2, asteroids[i].getX(), asteroids[i].getY(), asteroids[i].getWidth()/2)) {
                     	removeMe.push(value);
                     	asteroidPos = asteroids[i].getPos();
                     	asteroidSize = asteroids[i].getSize();
                     	asteroids.splice(i, 1);
                     	hit = true;
-                    	//add particle.value to the score
-                    	if (particle.value === -1){
-                    	}
-                    	else if (particle.value === 0){
-                    	}
-                    	else{
-                    	}
                 	}
                 }
             }
@@ -156,8 +149,70 @@ function gun(spec, graphics) {
         removeMe.length = 0;
         return {hit: hit, x: asteroidPos.x, y: asteroidPos.y, size: asteroidSize};
     };
+    
+    that.ufoHit = function(ufos, guns) {
+    	var removeMe = [], 
+    		value, 
+    		particle, 
+			ufoPos = {x: 0, y: 0},
+			hit = false;
+		// particle in this loop is the bullet
+		for (value in particles) {
+			if (particles.hasOwnProperty(value)) {
+				particle = particles[value];
+				for ( var i = 0; i < ufos.length; i++) {
+					if (collision(particle.center.x, particle.center.y,
+							particle.size / 2, ufos[i].getX(),
+							ufos[i].getY(), ufos[i].getWidth() / 2)) {
+						removeMe.push(value);
+						ufoPos = ufos[i].getPos();
+						ufos.splice(i, 1);
+						guns.splice(i, 1);
+						hit = true;
+					}
+				}
+			}
+		}
+		// remove all clicked on particles
+		for (particle = 0; particle < removeMe.length; particle++) {
+			delete particles[removeMe[particle]];
+		}
+		removeMe.length = 0;
+		return {
+			hit : hit,
+			x : ufoPos.x,
+			y : ufoPos.y
+		};
+	};
+    
+    that.motherShipHit = function(ship) {
+		var removeMe = [], 
+			value, 
+			particle, 
+			shipHit = false;
+		// particle in this loop is the bullet
+		for (value in particles) {
+			if (particles.hasOwnProperty(value)) {
+				particle = particles[value];
+				if (collision(particle.center.x, particle.center.y,
+						particle.size / 2, ship.getX(),
+					ship.getY(), ship.getWidth() / 2)) {
+					removeMe.push(value);
+					shipHit = true;
+				}
+			}
+		}
+		// remove all clicked on particles
+		for (particle = 0; particle < removeMe.length; particle++) {
+			delete particles[removeMe[particle]];
+		}
+		removeMe.length = 0;
+		return {
+			shipHit : shipHit
+		};
+	};
 
-    //function that tells us if the particles{} object has anymore properties
+    // function that tells us if the particles{} object has anymore properties
     //
     that.noMoreParticles = function() {
         var count = 0,
