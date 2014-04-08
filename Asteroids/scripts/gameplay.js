@@ -481,6 +481,13 @@ ASTEROIDS.screens['game-play'] = (function() {
 		
 		ufoHit = missile.ufoHit(enemyArray, enemyGunArray);
 		if(ufoHit.hit){
+			if(ufoHit.type == 'hard'){
+				scoreText.updateScore1000();
+			}
+			else if(ufoHit.type == 'easy'){
+				scoreText.updateScore200();
+			}
+
 			explosionAudio.play();
 			var x = ufoHit.x, 
 				y = ufoHit.y;

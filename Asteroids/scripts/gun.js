@@ -155,6 +155,7 @@ function gun(spec, graphics) {
     		value, 
     		particle, 
 			ufoPos = {x: 0, y: 0},
+			type = null,
 			hit = false;
 		// particle in this loop is the bullet
 		for (value in particles) {
@@ -164,6 +165,7 @@ function gun(spec, graphics) {
 					if (collision(particle.center.x, particle.center.y,
 							particle.size / 2, ufos[i].getX(),
 							ufos[i].getY(), ufos[i].getWidth() / 2)) {
+						type = ufos[i].getDiff();
 						removeMe.push(value);
 						ufoPos = ufos[i].getPos();
 						ufos.splice(i, 1);
@@ -179,6 +181,7 @@ function gun(spec, graphics) {
 		}
 		removeMe.length = 0;
 		return {
+			type : type,
 			hit : hit,
 			x : ufoPos.x,
 			y : ufoPos.y
