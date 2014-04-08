@@ -1,10 +1,10 @@
-ASTEROIDS.screens['credits'] = (function() {
+ASTEROIDS.screens['gameover'] = (function() {
 	'use strict';
 	
 	function initialize() {
-		document.getElementById('id-credits-back').addEventListener(
+		document.getElementById('id-gameover-back').addEventListener(
 			'click',
-			function() { ASTEROIDS.game.showScreen('main-menu'); },
+			function() { location.reload(); },
 			false);
 	}
 	

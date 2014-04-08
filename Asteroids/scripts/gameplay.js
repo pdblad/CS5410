@@ -119,7 +119,8 @@ ASTEROIDS.screens['game-play'] = (function() {
 		lifeArray.pop();
 		if(lifeArray.length == 0){
 			//Game Over and Restart Game
-			ASTEROIDS.game.showScreen('credits');
+			ASTEROIDS.game.showScreen('gameover');
+			cancelNextRequest = true;
 		}
 		
 		shipExplosion1.updatePos(ship.getX(), ship.getY());

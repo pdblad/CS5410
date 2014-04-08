@@ -33,6 +33,7 @@ window.addEventListener('load', function() {
 			        'preload!scripts/gameplay.js',
 			        'preload!scripts/help.js',
 			        'preload!scripts/highscores.js',
+			        'preload!scripts/gameover.js',
                     'preload!scripts/credits.js',
                     'preload!scripts/particleSystem.js',
                     'preload!scripts/gun.js',

@@ -7,6 +7,9 @@ ASTEROIDS.screens['ai'] = (function() {
 		ship = null,
 		enemyShipEasy = null,
 		enemyShipHard = null,
+		missile = null,
+		enemyGunEasy = null,
+		enemyGunHard = null,
 		leftThruster = null,
 		rightThruster = null,
 		shipExplosion1 = null,
@@ -14,17 +17,20 @@ ASTEROIDS.screens['ai'] = (function() {
 		shipExplosion3 = null,
 		asteroidExplosion = null,
 		hyperExplode = null,
-		missile = null,
 		asteroid = null,
 		asteroidsArray = [],
 		lifeArray = [],
+		enemyArray = [],
+		enemyGunArray = [],
 		count = 0,
 		pause = 0,
 		missileCount = 0,
 		numAsteroids = 0,
 		hyperCount = 0,
 		invincibleCount = 0,
+		gameTimer = 0,
 		newLife = 10000,
+		currLevelScore = 0,
 		shootAudio = null,
 		ufoAudio = null,
 		thrustAudio = null,
@@ -38,7 +44,11 @@ ASTEROIDS.screens['ai'] = (function() {
 		asteroidHit = false,
 		cancelNextRequest = false,
 		shipHit = false,
-		shipInvincible = false;
+		shipInvincible = false,
+		ufoHit = false,
+		easyAdded = false,
+		hardAdded = false,
+		fireCount = 0;
 	
 	var collisionDetected = function(object1, object2){
 		var object1Radius = object1.getRadius() - 15;	//Subtracted 15 to make up for ship not being exactly circular
@@ -69,6 +79,18 @@ ASTEROIDS.screens['ai'] = (function() {
 		return safeDistance;
 	};
 	
+	var fireMissile = function(){
+		missile.updatePos({x: ship.getGunPos().x, y: ship.getGunPos().y}, 
+						ship.getRotation()
+			);
+		missileCount++;
+		if(missileCount === 8){
+			shootAudio.play();
+			missile.create();
+			missileCount = 0;
+		}
+	};
+
 	var hyperJump = function(){
 		if(ASTEROIDS.hyperReady){
 			hyperExplode.updatePos(ship.getX(), ship.getY());
@@ -93,16 +115,28 @@ ASTEROIDS.screens['ai'] = (function() {
 		}
 	};
 	
-	var fireMissile = function(){
-		missile.updatePos({x: ship.getGunPos().x, y: ship.getGunPos().y}, 
-						//{x: ship.getGunAngle().x, y: ship.getGunAngle().y},
-						ship.getRotation()
-			);
-		missileCount++;
-		if(missileCount === 8){
-			shootAudio.play();
-			missile.create();
-			missileCount = 0;
+	
+	var explodeShip = function(){				
+		shipExplodeAudio.play();
+//		lifeArray.pop(); //Comment out for AI, so that it will go on living forever
+		if(lifeArray.length == 0){
+			//Game Over and Restart Game
+			ASTEROIDS.game.showScreen('gameover');
+			cancelNextRequest = true;
+		}
+		
+		shipExplosion1.updatePos(ship.getX(), ship.getY());
+		shipExplosion2.updatePos(ship.getX(), ship.getY());
+		shipExplosion3.updatePos(ship.getX(), ship.getY());
+		for(var i = 0; i < 200; i++){
+			shipExplosion1.create();
+			if(i%2 === 0){
+				shipExplosion3.create();
+				shipExplosion2.create();
+			}
+			ship.shipHit();
+			shipHit = true;
+			shipInvincible = true;
 		}
 	};
 	
@@ -125,43 +159,67 @@ ASTEROIDS.screens['ai'] = (function() {
 		});
 		
 		enemyShipEasy = ASTEROIDS.aiGraphics.Texture({
+			diff : 'easy',
 			image : ASTEROIDS.images['images/BYU-Logo.png'],
 			center : {x : Random.nextRange(50, ASTEROIDS.screenWidth), y : Random.nextRange(50, ASTEROIDS.screenHeight)},
 			width : 80, height : 80,
 			rotation : -3.14,
-			moveRate : 200,
+			moveRate : 100,
 			rotateRate : 3.14159,
 			dx : 0,
 			dy : 0,
-			fireThrusters : false
+			speed : 2,
+			direction : Random.nextCircleVector()
 		});
 		
 		enemyShipHard = ASTEROIDS.aiGraphics.Texture({
+			diff : 'hard',
 			image : ASTEROIDS.images['images/UofU-Logo.png'],
 			center : {x : Random.nextRange(50, ASTEROIDS.screenWidth), y : Random.nextRange(50, ASTEROIDS.screenHeight)},
 			width : 80, height : 80,
 			rotation : -3.14,
-			moveRate : 200,
+			moveRate : 100,
 			rotateRate : 3.14159,
-			dx : 0,
-			dy : 0,
-			fireThrusters : false
+			dx : 3,
+			dy : 3,
+			speed : 3,
+			direction : Random.nextCircleVector()
 		});
 		
 		missile = gun({
 			image: ASTEROIDS.images['images/LaserBall.png'],
 			center: {x: ship.getGunPos().x, y: ship.getGunPos().y},
+			size: 25,
 			direction: {x: 0, y: 0},
-			speed: 350,
+			speed: 400,
 			lifetime: 4,
 			}, ASTEROIDS.aiGraphics
 		);
 		
-
+		enemyGunEasy = gun({
+			image: ASTEROIDS.images['images/enemyBullet.png'],
+			center: {x: enemyShipEasy.getGunPos().x, y: enemyShipEasy.getGunPos().y},
+			size: 25,
+			direction: {x: 0, y: 0},
+			speed: 200,
+			lifetime: 6,
+			}, ASTEROIDS.aiGraphics
+		);
+		
+		enemyGunHard = gun({
+			image: ASTEROIDS.images['images/enemyBullet.png'],
+			center: {x: enemyShipHard.getGunPos().x, y: enemyShipHard.getGunPos().y},
+			size: 25,
+			direction: {x: 0, y: 0},
+			speed: 300,
+			lifetime: 3,
+			}, ASTEROIDS.aiGraphics
+		);
+		
 		leftThruster = particleSystem({
 			image : ASTEROIDS.images['images/blueFire.png'],
 			center: {x: ship.getLeftThrusterPos().x, y: ship.getLeftThrusterPos().y},
-			size: {mean: 10, std: 4},
+			size: {mean: 20, std: 4},
 			speed: {mean: 10, stdev: 2},
 			lifetime: {mean: 2, stdev: 1}
 			}, ASTEROIDS.aiGraphics
@@ -170,7 +228,7 @@ ASTEROIDS.screens['ai'] = (function() {
 		rightThruster = particleSystem({
 			image : ASTEROIDS.images['images/blueFire.png'],
 			center : {x: ship.getRightThrusterPos().x, y: ship.getRightThrusterPos().y},
-			size: {mean: 10, std: 4},
+			size: {mean: 20, std: 4},
 			speed : {mean: 10, stdev: 2},
 			lifetime: {mean: 2, stdev: 1}
 			}, ASTEROIDS.aiGraphics
@@ -215,7 +273,7 @@ ASTEROIDS.screens['ai'] = (function() {
 		asteroidExplosion = particleSystem({
 			image: ASTEROIDS.images['images/Asteroid2.png'],
 			center: {x: 0, y: 0},
-			size: {mean: 10, std: 5},
+			size: {mean: 5, std: 1},
 			speed: {mean: 200, stdev: 10},
 			lifetime: {mean: 2, stdev: 1}
 			}, ASTEROIDS.aiGraphics
@@ -242,7 +300,7 @@ ASTEROIDS.screens['ai'] = (function() {
 		explosionAudio = audio({
 			sound: 'sounds/depthCharge.wav',
 			duration: 0,
-			volume: .7
+			volume: .8
 		});
 		
 		shipExplodeAudio = audio({
@@ -311,6 +369,14 @@ ASTEROIDS.screens['ai'] = (function() {
 
 		//
 		// Create the keyboard input handler and register the keyboard commands
+//		document.addEventListener('keydown', function() {
+//			//
+//			// Stop the game loop by canceling the request for the next animation frame
+//			cancelNextRequest = true;
+//			//
+//			// Then, return to the main menu
+//			location.reload(); }, false);
+		
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function() {
 			//
 			// Stop the game loop by canceling the request for the next animation frame
@@ -319,8 +385,10 @@ ASTEROIDS.screens['ai'] = (function() {
 			// Then, return to the main menu
 			ASTEROIDS.game.showScreen('main-menu');
 		});
+
+
 	}
-	
+
 	//This is the main update function where various frameworks can be updated
 	//
 	function gameUpdate(elapsedTime){
@@ -343,6 +411,8 @@ ASTEROIDS.screens['ai'] = (function() {
 		//Start new level if all current asteroids (and UFO's) are destroyed
 		if(asteroidsArray.length == 0){
 			levelNumText.nextLevel();
+			currLevelScore = 0;
+			easyAdded = false;
 			numAsteroids++;
 			for(var i = 0; i < numAsteroids; i++){
 				asteroidsArray.push(
@@ -380,6 +450,7 @@ ASTEROIDS.screens['ai'] = (function() {
 			//size 3 asteroids split into 3 smaller ones
 			if(size === 3){
 				scoreText.updateScore20();
+				currLevelScore += 20;
 				for(i = 0; i < 3; i++){
 					asteroidsArray.push(ASTEROIDS.aiGraphics.Texture( {
 								image : ASTEROIDS.images['images/Asteroid2.png'],
@@ -397,6 +468,7 @@ ASTEROIDS.screens['ai'] = (function() {
 			//size 2 asteroids split into 4 smaller ones
 			if(size === 2){
 				scoreText.updateScore50();
+				currLevelScore += 50;
 				for(i = 0; i < 4; i++){
 					asteroidsArray.push(ASTEROIDS.aiGraphics.Texture( {
 								image : ASTEROIDS.images['images/Asteroid2.png'],
@@ -411,46 +483,48 @@ ASTEROIDS.screens['ai'] = (function() {
 						);
 				}
 			}
-			
-			if(size === 1)
+			//add score for smaller size
+			if(size === 1){
 				scoreText.updateScore100();
+				currLevelScore += 100;
+			}
 		}
 		//end asteroid hit stuff
+		
+		
+		ufoHit = missile.ufoHit(enemyArray, enemyGunArray);
+		if(ufoHit.hit){
+			if(ufoHit.type == 'hard'){
+				scoreText.updateScore1000();
+			}
+			else if(ufoHit.type == 'easy'){
+				scoreText.updateScore200();
+			}
+
+			explosionAudio.play();
+			var x = ufoHit.x, 
+				y = ufoHit.y;
+			asteroidExplosion.updatePos(ufoHit.x, ufoHit.y);
+			for(var i = 0; i < 10; i++)
+				asteroidExplosion.create();
+			ufoHit = false;
+		}		
 		
 		//update the collisions between asteroid and ship
 		//we should definitely look at putting all of these for loops in functions...
 		if(!shipHit){
 			for(var i = 0; i < asteroidsArray.length; i++){
-				if(collisionDetected(ship, asteroidsArray[i])){
-					shipExplodeAudio.play();
-					lifeArray.pop();
-					if(lifeArray.length == 0){
-						//Game Over and Restart Game
-						ASTEROIDS.game.showScreen('credits');
-						cancelNextRequest = true;
-					}
-					
-					shipExplosion1.updatePos(ship.getX(), ship.getY());
-					shipExplosion2.updatePos(ship.getX(), ship.getY());
-					shipExplosion3.updatePos(ship.getX(), ship.getY());
-					for(var i = 0; i < 200; i++){
-						shipExplosion1.create();
-						if(i%2 === 0){
-							shipExplosion3.create();
-							shipExplosion2.create();
-						}
-						ship.shipHit();
-						shipHit = true;
-						shipInvincible = true;
-					}
-				}
+				if(collisionDetected(ship, asteroidsArray[i]))
+					explodeShip();
+				if(enemyGunEasy.motherShipHit(ship).shipHit || enemyGunHard.motherShipHit(ship).shipHit)
+					explodeShip();
 			}
 		}
 		else{
 			pause += elapsedTime;
 			invincibleCount += elapsedTime;
 			//disappear for 1.5 seconds
-			if(pause >= 1500 && shipInvincible){
+			if(pause >= 1000 && shipInvincible){
 				ship.reset(elapsedTime);
 				shipInvincible = false;
 			}
@@ -460,16 +534,11 @@ ASTEROIDS.screens['ai'] = (function() {
 			}
 		}
 		
-		//update all 3 ships
-		enemyShipEasy.updateEnemy('easy', elapsedTime);
-		enemyShipHard.updateEnemy('hard', elapsedTime);
-		ship.updatePos();
-
 		//only update thruster specs if the thruster button is hit
 		if(ship.getThrusterStatus()){
 			leftThruster.updatePos(ship.getLeftThrusterPos().x, ship.getLeftThrusterPos().y);
 			rightThruster.updatePos(ship.getRightThrusterPos().x, ship.getRightThrusterPos().y);
-			for(var i = 0; i < 10; i++){
+			for(var i = 0; i < 2; i++){
 				leftThruster.create();
 				rightThruster.create();
 			}
@@ -477,15 +546,49 @@ ASTEROIDS.screens['ai'] = (function() {
 			ship.setThrusterStatus(false);
 		}
 		
+		//update all 3 ships
+		ship.updateAI(elapsedTime);
+		fireMissile();
+
+//		fireCount += elapsedTime;
+//		
+//		//fire n000 seconds
+//		if(fireCount >= 1000){
+//			fireMissile();
+//
+//			fireCount = 0;
+//		}
+
+		if(enemyGunArray.length > 0){
+			enemyShipEasy.updateEnemy(enemyShipEasy, enemyGunEasy, elapsedTime);
+			enemyShipHard.updateEnemy(enemyShipHard, enemyGunHard, elapsedTime);
+		}
+		
 		//update particle systems
 		leftThruster.update(elapsedTime/1000);
 		rightThruster.update(elapsedTime/1000);
 		missile.update(elapsedTime/1000);
+		enemyGunEasy.update(elapsedTime/1000);
+		enemyGunHard.update(elapsedTime/1000);
 		shipExplosion1.update(elapsedTime/1000);
 		shipExplosion2.update(elapsedTime/1000);
 		shipExplosion3.update(elapsedTime/1000);
 		asteroidExplosion.update(elapsedTime/1000);
 		hyperExplode.update(elapsedTime/1000);
+		
+		if(currLevelScore >= 1000 && !easyAdded){
+			ufoAudio.play();
+			enemyArray.push(enemyShipEasy);
+			enemyGunArray.push(enemyGunEasy);
+			easyAdded = true;
+		}
+		
+		if(scoreText.getScore() >= 20000 && !hardAdded){
+			ufoAudio.play();
+			enemyArray.push(enemyShipHard);
+			enemyGunArray.push(enemyGunHard);
+			hardAdded = true;
+		}
 	}
 	
 	//This is the main render function where various frameworks are rendered
@@ -506,10 +609,8 @@ ASTEROIDS.screens['ai'] = (function() {
 		
 		//draw all bullet particles
 		missile.render();
-		
-		//draw enemy ships
-		enemyShipEasy.draw();
-		enemyShipHard.draw();
+		enemyGunEasy.render();
+		enemyGunHard.render();
 		
 		//draw ship explosion particles and asteroid explosion
 		shipExplosion1.render();
@@ -518,8 +619,15 @@ ASTEROIDS.screens['ai'] = (function() {
 		asteroidExplosion.render();
 		hyperExplode.render();
 		
+		//draw enemy ships
+		for(var i = 0; i < enemyArray.length; i++){
+			enemyArray[i].draw();
+		}
+		
 		//draw ship last to make exaust go behind it
 		ship.draw();
+		
+		//scoring text
 		scoreText.drawText();
 		levelText.drawText();
 		levelNumText.drawText();
@@ -550,7 +658,6 @@ ASTEROIDS.screens['ai'] = (function() {
 		ASTEROIDS.lastTimeStamp = performance.now();
 		//
 		// Start the animation loop
-		
 		cancelNextRequest = false;
 		requestAnimationFrame(gameLoop);
 	}
