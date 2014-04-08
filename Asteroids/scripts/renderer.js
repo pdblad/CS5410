@@ -31,7 +31,8 @@ ASTEROIDS.graphics = (function() {
 		var that = {};
 		
 		var resetCount = 0,
-			enemyFireCount = 0;
+			enemyFireCount = 0,
+			rotateCount = 0;
 
 		var wrap = function(){
 			var xMax = ASTEROIDS.screenWidth, yMax = ASTEROIDS.screenHeight;
@@ -239,16 +240,39 @@ ASTEROIDS.graphics = (function() {
 		};
 		
 		that.updateEnemy = function(ship, gun, elapsedTime){
+			//update ship movement
 			spec.center.x += (spec.speed * spec.direction.x);
 			spec.center.y += (spec.speed * spec.direction.y);
-			//fire every 2 seconds
+			
+			rotateCount += elapsedTime;
 			enemyFireCount += elapsedTime;
-			if(enemyFireCount >= 2000){
-				gun.updatePos({x: ship.getGunPos().x, y: ship.getGunPos().y}, ship.getRotation());
-				gun.updatePos({x: ship.getGunPos().x, y: ship.getGunPos().y}, ship.getRotation());
-				
-				gun.create();
-				enemyFireCount = 0;
+			
+			gun.updatePos({x: ship.getGunPos().x, y: ship.getGunPos().y}, ship.getRotation());
+			gun.updatePos({x: ship.getGunPos().x, y: ship.getGunPos().y}, ship.getRotation());
+			
+			//what to do with the harder ufo
+			if(spec.diff === 'hard'){
+				//fire n000 seconds
+				if(enemyFireCount >= 1000){
+					gun.create();
+					enemyFireCount = 0;
+				}
+				//rotate ship every so often
+				if(rotateCount >= 100){
+					that.rotateLeft(elapsedTime);
+					rotateCount = 0;
+				}
+			}
+			if(spec.diff === 'easy'){
+				//fire every n
+				if(enemyFireCount >= 1500){
+					gun.create();
+					enemyFireCount = 0;
+				}
+				if(rotateCount >= 100){
+					that.rotateLeft(elapsedTime);
+					rotateCount = 0;
+				}
 			}
 			wrap();
 		};

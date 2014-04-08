@@ -20,12 +20,14 @@ ASTEROIDS.screens['game-play'] = (function() {
 		asteroid = null,
 		asteroidsArray = [],
 		lifeArray = [],
+		enemyArray = [],
 		count = 0,
 		pause = 0,
 		missileCount = 0,
 		numAsteroids = 0,
 		hyperCount = 0,
 		invincibleCount = 0,
+		gameTimer = 0,
 		shootAudio = null,
 		ufoAudio = null,
 		thrustAudio = null,
@@ -39,7 +41,8 @@ ASTEROIDS.screens['game-play'] = (function() {
 		asteroidHit = false,
 		cancelNextRequest = false,
 		shipHit = false,
-		shipInvincible = false;
+		shipInvincible = false,
+		ufoHit = false;
 	
 	var collisionDetected = function(object1, object2){
 		var object1Radius = object1.getRadius() - 15;	//Subtracted 15 to make up for ship not being exactly circular
@@ -106,6 +109,29 @@ ASTEROIDS.screens['game-play'] = (function() {
 		}
 	};
 	
+	var explodeShip = function(){				
+		shipExplodeAudio.play();
+		lifeArray.pop();
+		if(lifeArray.length == 0){
+			//Game Over and Restart Game
+			ASTEROIDS.game.showScreen('credits');
+		}
+		
+		shipExplosion1.updatePos(ship.getX(), ship.getY());
+		shipExplosion2.updatePos(ship.getX(), ship.getY());
+		shipExplosion3.updatePos(ship.getX(), ship.getY());
+		for(var i = 0; i < 200; i++){
+			shipExplosion1.create();
+			if(i%2 === 0){
+				shipExplosion3.create();
+				shipExplosion2.create();
+			}
+			ship.shipHit();
+			shipHit = true;
+			shipInvincible = true;
+		}
+	};
+	
 	function initialize() {
 		console.log('game initializing...');
 		
@@ -125,11 +151,12 @@ ASTEROIDS.screens['game-play'] = (function() {
 		});
 		
 		enemyShipEasy = ASTEROIDS.graphics.Texture({
+			diff : 'easy',
 			image : ASTEROIDS.images['images/BYU-Logo.png'],
 			center : {x : Random.nextRange(50, ASTEROIDS.screenWidth), y : Random.nextRange(50, ASTEROIDS.screenHeight)},
 			width : 80, height : 80,
 			rotation : -3.14,
-			moveRate : 200,
+			moveRate : 100,
 			rotateRate : 3.14159,
 			dx : 0,
 			dy : 0,
@@ -138,11 +165,12 @@ ASTEROIDS.screens['game-play'] = (function() {
 		});
 		
 		enemyShipHard = ASTEROIDS.graphics.Texture({
+			diff : 'hard',
 			image : ASTEROIDS.images['images/UofU-Logo.png'],
 			center : {x : Random.nextRange(50, ASTEROIDS.screenWidth), y : Random.nextRange(50, ASTEROIDS.screenHeight)},
 			width : 80, height : 80,
 			rotation : -3.14,
-			moveRate : 200,
+			moveRate : 100,
 			rotateRate : 3.14159,
 			dx : 3,
 			dy : 3,
@@ -155,7 +183,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 			center: {x: ship.getGunPos().x, y: ship.getGunPos().y},
 			size: 25,
 			direction: {x: 0, y: 0},
-			speed: 350,
+			speed: 400,
 			lifetime: 4,
 			}, ASTEROIDS.graphics
 		);
@@ -163,7 +191,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		enemyGunEasy = gun({
 			image: ASTEROIDS.images['images/enemyBullet.png'],
 			center: {x: enemyShipEasy.getGunPos().x, y: enemyShipEasy.getGunPos().y},
-			size: 125,
+			size: 25,
 			direction: {x: 0, y: 0},
 			speed: 200,
 			lifetime: 6,
@@ -173,7 +201,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		enemyGunHard = gun({
 			image: ASTEROIDS.images['images/enemyBullet.png'],
 			center: {x: enemyShipHard.getGunPos().x, y: enemyShipHard.getGunPos().y},
-			size: 125,
+			size: 25,
 			direction: {x: 0, y: 0},
 			speed: 300,
 			lifetime: 3,
@@ -341,8 +369,11 @@ ASTEROIDS.screens['game-play'] = (function() {
 			// Then, return to the main menu
 			ASTEROIDS.game.showScreen('main-menu');
 		});
+		
+		enemyArray.push(enemyShipHard);
+		enemyArray.push(enemyShipEasy);
 	}
-	
+
 	//This is the main update function where various frameworks can be updated
 	//
 	function gameUpdate(elapsedTime){
@@ -427,32 +458,27 @@ ASTEROIDS.screens['game-play'] = (function() {
 		}
 		//end asteroid hit stuff
 		
+		
+		ufoHit = missile.ufoHit(enemyArray);
+		if(ufoHit.hit){
+			explosionAudio.play();
+			var x = ufoHit.x, 
+				y = ufoHit.y;
+			asteroidExplosion.updatePos(ufoHit.x, ufoHit.y);
+			for(var i = 0; i < 10; i++)
+				asteroidExplosion.create();
+			ufoHit = false;
+		}		
+		
 		//update the collisions between asteroid and ship
 		//we should definitely look at putting all of these for loops in functions...
 		if(!shipHit){
 			for(var i = 0; i < asteroidsArray.length; i++){
 				if(collisionDetected(ship, asteroidsArray[i])){
-					shipExplodeAudio.play();
-					lifeArray.pop();
-					if(lifeArray.length == 0){
-						//Game Over and Restart Game
-						ASTEROIDS.game.showScreen('credits');
-					}
-					
-					shipExplosion1.updatePos(ship.getX(), ship.getY());
-					shipExplosion2.updatePos(ship.getX(), ship.getY());
-					shipExplosion3.updatePos(ship.getX(), ship.getY());
-					for(var i = 0; i < 200; i++){
-						shipExplosion1.create();
-						if(i%2 === 0){
-							shipExplosion3.create();
-							shipExplosion2.create();
-						}
-						ship.shipHit();
-						shipHit = true;
-						shipInvincible = true;
-					}
+					explodeShip();
 				}
+				if(enemyGunEasy.motherShipHit(ship).shipHit || enemyGunHard.motherShipHit(ship).shipHit)
+					explodeShip();
 			}
 		}
 		else{
