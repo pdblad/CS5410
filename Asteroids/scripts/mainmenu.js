@@ -4,7 +4,8 @@ ASTEROIDS.screens['main-menu'] = (function() {
 	'use strict';
 	
 	function initialize() {
-		//
+		setTimeout(function(){ ASTEROIDS.game.showScreen('ai'); }, 10000);
+		
 		// Setup each of menu events for the screens
 		document.getElementById('id-new-game').addEventListener(
 			'click',
@@ -33,8 +34,8 @@ ASTEROIDS.screens['main-menu'] = (function() {
 	}
 	
 	function run() {
-		//
-		// I know this is empty, there isn't anything to do.
+		//start AI after 10 seconds
+
 	}
 	
 	return {
