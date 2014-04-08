@@ -106,6 +106,10 @@ ASTEROIDS.graphics = (function() {
 			};
 		};
 		
+	    that.getDiff = function(){
+	    	return spec.diff;
+	    };
+		
 		that.getLeftThrusterPos = function(){
 			return {
 				x : spec.center.x+(spec.height/2)*-Math.cos(.5+spec.rotation), 
