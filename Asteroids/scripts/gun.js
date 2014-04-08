@@ -13,6 +13,14 @@ function gun(spec, graphics) {
         return distance < (r1 + r2);
     };
 
+    that.getX = function(){
+    	return spec.center.x;
+    };
+    
+    that.getY = function(){
+    	return spec.center.y;
+    };
+    
     //------------------------------------------------------------------
     //
     // This creates one new particle
@@ -21,7 +29,7 @@ function gun(spec, graphics) {
     that.create = function() {
         var p = {
             image: spec.image,
-            size: 25,
+            size: spec.size,
             center: {x: spec.center.x, y: spec.center.y},
             direction: {x: spec.direction.x, y: spec.direction.y},
             speed: spec.speed, // pixels per second

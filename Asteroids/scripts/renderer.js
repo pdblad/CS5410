@@ -30,7 +30,8 @@ ASTEROIDS.graphics = (function() {
 	function Texture(spec) {
 		var that = {};
 		
-		var resetCount = 0;
+		var resetCount = 0,
+			enemyFireCount = 0;
 
 		var wrap = function(){
 			var xMax = ASTEROIDS.screenWidth, yMax = ASTEROIDS.screenHeight;
@@ -228,7 +229,7 @@ ASTEROIDS.graphics = (function() {
 			spec.dy = 0;
 		};
 		
-		that.updatePos = function(elapsedTime){
+		that.updatePos = function(){
 			spec.center.x += spec.dx;
 			spec.center.y += spec.dy;
 			//this is friction, uncomment if friction is wanted
@@ -237,21 +238,19 @@ ASTEROIDS.graphics = (function() {
 			wrap();
 		};
 		
-		that.updateEnemy = function(difficulty, elapsedTime){
-			//that.rotateRight(elapsedTime);
-			var randomnumber=Math.floor(Math.random()*4);
-			if(randomnumber === 0)
-				that.fireThrusters(elapsedTime);	
-			else if(randomnumber === 1){
-				for(var i = 0; i<10; i++)
-					that.rotateLeft(elapsedTime);
+		that.updateEnemy = function(ship, gun, elapsedTime){
+			spec.center.x += (spec.speed * spec.direction.x);
+			spec.center.y += (spec.speed * spec.direction.y);
+			//fire every 2 seconds
+			enemyFireCount += elapsedTime;
+			if(enemyFireCount >= 2000){
+				gun.updatePos({x: ship.getGunPos().x, y: ship.getGunPos().y}, ship.getRotation());
+				gun.updatePos({x: ship.getGunPos().x, y: ship.getGunPos().y}, ship.getRotation());
+				
+				gun.create();
+				enemyFireCount = 0;
 			}
-			else if (randomnumber === 2){
-				for(var i = 0; i<10; i++)
-					that.rotateRight(elapsedTime);
-			}
-			else{}
-			that.updatePos(elapsedTime);
+			wrap();
 		};
 		
 		that.moveTo = function(x, y) {
