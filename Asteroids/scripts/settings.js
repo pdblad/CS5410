@@ -24,9 +24,9 @@ ASTEROIDS.screens['settings'] = (function() {
 		count = 0;
 		
 		navRightTxt = ASTEROIDS.textRenderer.Text({
-            text: 'Press key for right rotation of ship',
-            font: '80px Arial, sans-serif',
-            fill: 'rgba(255, 0, 0, 1)',
+            text: 'Press a key for right rotation of ship',
+            font: '80px Impact, fantasy',
+            fill: 'rgba(255, 255, 255, 1)',
             stroke: 'rgba(255, 0, 0, 1)',
             pos: {x: 20, y: ASTEROIDS.screenHeight/2},
             rotation: 0
@@ -34,8 +34,8 @@ ASTEROIDS.screens['settings'] = (function() {
 		
 		navLeftTxt = ASTEROIDS.textRenderer.Text({
 			text: 'Press a key for left rotation of ship',
-            font: '80px Arial, sans-serif',
-            fill: 'rgba(255, 0, 0, 1)',
+            font: '80px Impact, fantasy',
+            fill: 'rgba(255, 255, 255, 1)',
             stroke: 'rgba(255, 0, 0, 1)',
             pos: {x: 20, y: ASTEROIDS.screenHeight/2},
             rotation: 0
@@ -43,8 +43,8 @@ ASTEROIDS.screens['settings'] = (function() {
 		
 		navThrustTxt = ASTEROIDS.textRenderer.Text({
 			text: 'Choose a key for thruster control',
-            font: '80px Arial, sans-serif',
-            fill: 'rgba(255, 0, 0, 1)',
+            font: '80px Impact, fantasy',
+            fill: 'rgba(255, 255, 255, 1)',
             stroke: 'rgba(255, 0, 0, 1)',
             pos: {x: 20, y: ASTEROIDS.screenHeight/2},
             rotation: 0
@@ -52,8 +52,8 @@ ASTEROIDS.screens['settings'] = (function() {
 		
 		shootTxt = ASTEROIDS.textRenderer.Text({
 			text: 'Choose a key for missle shooting',
-            font: '80px Arial, sans-serif',
-            fill: 'rgba(255, 0, 0, 1)',
+            font: '80px Impact, fantasy',
+            fill: 'rgba(255, 255, 255, 1)',
             stroke: 'rgba(255, 0, 0, 1)',
             pos: {x: 20, y: ASTEROIDS.screenHeight/2},
             rotation: 0
@@ -61,8 +61,8 @@ ASTEROIDS.screens['settings'] = (function() {
 		
 		hyperSpaceTxt = ASTEROIDS.textRenderer.Text({
 			text: 'Choose a key for hyperspace',
-            font: '80px Arial, sans-serif',
-            fill: 'rgba(255, 0, 0, 1)',
+            font: '80px Impact, fantasy',
+            fill: 'rgba(255, 255, 255, 1)',
             stroke: 'rgba(255, 0, 0, 1)',
             pos: {x: 20, y: ASTEROIDS.screenHeight/2},
             rotation: 0

@@ -150,7 +150,7 @@ function gun(spec, graphics) {
         return {hit: hit, x: asteroidPos.x, y: asteroidPos.y, size: asteroidSize};
     };
     
-    that.ufoHit = function(ufos) {
+    that.ufoHit = function(ufos, guns) {
     	var removeMe = [], 
     		value, 
     		particle, 
@@ -167,6 +167,7 @@ function gun(spec, graphics) {
 						removeMe.push(value);
 						ufoPos = ufos[i].getPos();
 						ufos.splice(i, 1);
+						guns.splice(i, 1);
 						hit = true;
 					}
 				}

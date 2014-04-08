@@ -1,15 +1,12 @@
 /*jslint browser: true, white: true, plusplus: true */
 /*global ASTEROIDS, console, KeyEvent, requestAnimationFrame, performance */
-ASTEROIDS.screens['game-play'] = (function() {
+ASTEROIDS.screens['ai'] = (function() {
 	'use strict';
 	
 	var myKeyboard = ASTEROIDS.input.Keyboard(),
 		ship = null,
 		enemyShipEasy = null,
 		enemyShipHard = null,
-		missile = null,
-		enemyGunEasy = null,
-		enemyGunHard = null,
 		leftThruster = null,
 		rightThruster = null,
 		shipExplosion1 = null,
@@ -17,18 +14,16 @@ ASTEROIDS.screens['game-play'] = (function() {
 		shipExplosion3 = null,
 		asteroidExplosion = null,
 		hyperExplode = null,
+		missile = null,
 		asteroid = null,
 		asteroidsArray = [],
 		lifeArray = [],
-		enemyArray = [],
-		enemyGunArray = [],
 		count = 0,
 		pause = 0,
 		missileCount = 0,
 		numAsteroids = 0,
 		hyperCount = 0,
 		invincibleCount = 0,
-		gameTimer = 0,
 		newLife = 10000,
 		shootAudio = null,
 		ufoAudio = null,
@@ -43,8 +38,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		asteroidHit = false,
 		cancelNextRequest = false,
 		shipHit = false,
-		shipInvincible = false,
-		ufoHit = false;
+		shipInvincible = false;
 	
 	var collisionDetected = function(object1, object2){
 		var object1Radius = object1.getRadius() - 15;	//Subtracted 15 to make up for ship not being exactly circular
@@ -101,6 +95,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 	
 	var fireMissile = function(){
 		missile.updatePos({x: ship.getGunPos().x, y: ship.getGunPos().y}, 
+						//{x: ship.getGunAngle().x, y: ship.getGunAngle().y},
 						ship.getRotation()
 			);
 		missileCount++;
@@ -111,36 +106,13 @@ ASTEROIDS.screens['game-play'] = (function() {
 		}
 	};
 	
-	var explodeShip = function(){				
-		shipExplodeAudio.play();
-		lifeArray.pop();
-		if(lifeArray.length == 0){
-			//Game Over and Restart Game
-			ASTEROIDS.game.showScreen('credits');
-		}
-		
-		shipExplosion1.updatePos(ship.getX(), ship.getY());
-		shipExplosion2.updatePos(ship.getX(), ship.getY());
-		shipExplosion3.updatePos(ship.getX(), ship.getY());
-		for(var i = 0; i < 200; i++){
-			shipExplosion1.create();
-			if(i%2 === 0){
-				shipExplosion3.create();
-				shipExplosion2.create();
-			}
-			ship.shipHit();
-			shipHit = true;
-			shipInvincible = true;
-		}
-	};
-	
 	function initialize() {
 		console.log('game initializing...');
 		
 		numAsteroids = 3;
 		ASTEROIDS.hyperReady = true;
 
-		ship = ASTEROIDS.graphics.Texture( {
+		ship = ASTEROIDS.aiGraphics.Texture( {
 			image : ASTEROIDS.images['images/USU-Logo.png'],
 			center : { x : ASTEROIDS.screenWidth/2, y : ASTEROIDS.screenHeight/2 },
 			width : 70, height : 70,
@@ -152,80 +124,56 @@ ASTEROIDS.screens['game-play'] = (function() {
 			fireThrusters : false
 		});
 		
-		enemyShipEasy = ASTEROIDS.graphics.Texture({
-			diff : 'easy',
+		enemyShipEasy = ASTEROIDS.aiGraphics.Texture({
 			image : ASTEROIDS.images['images/BYU-Logo.png'],
 			center : {x : Random.nextRange(50, ASTEROIDS.screenWidth), y : Random.nextRange(50, ASTEROIDS.screenHeight)},
 			width : 80, height : 80,
 			rotation : -3.14,
-			moveRate : 100,
+			moveRate : 200,
 			rotateRate : 3.14159,
 			dx : 0,
 			dy : 0,
-			speed : 2,
-			direction : Random.nextCircleVector()
+			fireThrusters : false
 		});
 		
-		enemyShipHard = ASTEROIDS.graphics.Texture({
-			diff : 'hard',
+		enemyShipHard = ASTEROIDS.aiGraphics.Texture({
 			image : ASTEROIDS.images['images/UofU-Logo.png'],
 			center : {x : Random.nextRange(50, ASTEROIDS.screenWidth), y : Random.nextRange(50, ASTEROIDS.screenHeight)},
 			width : 80, height : 80,
 			rotation : -3.14,
-			moveRate : 100,
+			moveRate : 200,
 			rotateRate : 3.14159,
-			dx : 3,
-			dy : 3,
-			speed : 3,
-			direction : Random.nextCircleVector()
+			dx : 0,
+			dy : 0,
+			fireThrusters : false
 		});
 		
 		missile = gun({
 			image: ASTEROIDS.images['images/LaserBall.png'],
 			center: {x: ship.getGunPos().x, y: ship.getGunPos().y},
-			size: 25,
 			direction: {x: 0, y: 0},
-			speed: 400,
+			speed: 350,
 			lifetime: 4,
-			}, ASTEROIDS.graphics
+			}, ASTEROIDS.aiGraphics
 		);
 		
-		enemyGunEasy = gun({
-			image: ASTEROIDS.images['images/enemyBullet.png'],
-			center: {x: enemyShipEasy.getGunPos().x, y: enemyShipEasy.getGunPos().y},
-			size: 25,
-			direction: {x: 0, y: 0},
-			speed: 200,
-			lifetime: 6,
-			}, ASTEROIDS.graphics
-		);
-		
-		enemyGunHard = gun({
-			image: ASTEROIDS.images['images/enemyBullet.png'],
-			center: {x: enemyShipHard.getGunPos().x, y: enemyShipHard.getGunPos().y},
-			size: 25,
-			direction: {x: 0, y: 0},
-			speed: 300,
-			lifetime: 3,
-			}, ASTEROIDS.graphics
-		);
-		
+
 		leftThruster = particleSystem({
 			image : ASTEROIDS.images['images/blueFire.png'],
 			center: {x: ship.getLeftThrusterPos().x, y: ship.getLeftThrusterPos().y},
-			size: {mean: 20, std: 4},
+			size: {mean: 10, std: 4},
 			speed: {mean: 10, stdev: 2},
 			lifetime: {mean: 2, stdev: 1}
-			}, ASTEROIDS.graphics
+			}, ASTEROIDS.aiGraphics
 		);
 		
 		rightThruster = particleSystem({
 			image : ASTEROIDS.images['images/blueFire.png'],
 			center : {x: ship.getRightThrusterPos().x, y: ship.getRightThrusterPos().y},
-			size: {mean: 20, std: 4},
+			size: {mean: 10, std: 4},
 			speed : {mean: 10, stdev: 2},
 			lifetime: {mean: 2, stdev: 1}
-			}, ASTEROIDS.graphics
+			}, ASTEROIDS.aiGraphics
 		);
 		
 		hyperExplode = particleSystem({
@@ -234,7 +182,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 			size: {mean: 5, std: 4},
 			speed : {mean: 300, stdev: 10},
 			lifetime: {mean: 2, stdev: 1}
-			}, ASTEROIDS.graphics
+			}, ASTEROIDS.aiGraphics
 		);
 
 		shipExplosion1 = particleSystem({
@@ -243,7 +191,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 			size: {mean: 30, std: 5},
 			speed : {mean: 300, stdev: 10},
 			lifetime: {mean: 2, stdev: 1}
-			}, ASTEROIDS.graphics
+			}, ASTEROIDS.aiGraphics
 		);
 		
 		shipExplosion2 = particleSystem({
@@ -252,7 +200,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 			size: {mean: 40, std: 5},
 			speed : {mean: 60, stdev: 40},
 			lifetime: {mean: 2, stdev: 1}
-			}, ASTEROIDS.graphics
+			}, ASTEROIDS.aiGraphics
 		);
 		
 		shipExplosion3 = particleSystem({
@@ -261,7 +209,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 			size: {mean: 30, std: 5},
 			speed : {mean: 100, stdev: 10},
 			lifetime: {mean: 2, stdev: 1}
-			}, ASTEROIDS.graphics
+			}, ASTEROIDS.aiGraphics
 		);
 		
 		asteroidExplosion = particleSystem({
@@ -270,7 +218,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 			size: {mean: 10, std: 5},
 			speed: {mean: 200, stdev: 10},
 			lifetime: {mean: 2, stdev: 1}
-			}, ASTEROIDS.graphics
+			}, ASTEROIDS.aiGraphics
 		);
 		
 		shootAudio = audio({
@@ -294,7 +242,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		explosionAudio = audio({
 			sound: 'sounds/depthCharge.wav',
 			duration: 0,
-			volume: .8
+			volume: .7
 		});
 		
 		shipExplodeAudio = audio({
@@ -309,7 +257,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 			volume: .5
 		});
 				
-		scoreText = ASTEROIDS.graphics.Text({
+		scoreText = ASTEROIDS.aiGraphics.Text({
 			text: 0,
             font: '50px Arial, sans-serif',
             fill: 'rgba(0, 0, 225, 0.5)',
@@ -318,7 +266,7 @@ ASTEROIDS.screens['game-play'] = (function() {
             rotation: 0
 		});
 		
-		levelText = ASTEROIDS.graphics.Text({
+		levelText = ASTEROIDS.aiGraphics.Text({
 			text: "Level",
             font: '50px Arial, sans-serif',
             fill: 'rgba(0, 0, 225, 0.5)',
@@ -327,7 +275,7 @@ ASTEROIDS.screens['game-play'] = (function() {
             rotation: 0
 		});
 		
-		levelNumText = ASTEROIDS.graphics.Text({
+		levelNumText = ASTEROIDS.aiGraphics.Text({
 			text: 1,
             font: '50px Arial, sans-serif',
             fill: 'rgba(0, 0, 225, 0.5)',
@@ -338,7 +286,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		
 		for(var i = 0; i < 3; i++){
 			lifeArray.push(
-				lives = ASTEROIDS.graphics.Texture( {
+				lives = ASTEROIDS.aiGraphics.Texture( {
 					image : ASTEROIDS.images['images/USU-Logo.png'],
 					center : { x : 450 + (i*75), y : 45 },
 					width : 50, height : 50
@@ -348,7 +296,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		
 		for(var i = 0; i < numAsteroids; i++){
 			asteroidsArray.push(
-				asteroid = ASTEROIDS.graphics.Texture( {
+				asteroid = ASTEROIDS.aiGraphics.Texture( {
 					image : ASTEROIDS.images['images/Asteroid2.png'],
 					center : { x : Random.nextRange(50, ASTEROIDS.screenWidth), y : ASTEROIDS.screenHeight },
 					width : 125, height : 125,
@@ -371,24 +319,18 @@ ASTEROIDS.screens['game-play'] = (function() {
 			// Then, return to the main menu
 			ASTEROIDS.game.showScreen('main-menu');
 		});
-		
-		//add this stuff after certain ammount of time, make sure the same difficulty gun is matched with the right ship
-		enemyArray.push(enemyShipHard);
-		enemyArray.push(enemyShipEasy);
-		enemyGunArray.push(enemyGunHard);
-		enemyGunArray.push(enemyGunEasy);
 	}
-
+	
 	//This is the main update function where various frameworks can be updated
 	//
 	function gameUpdate(elapsedTime){
-		ASTEROIDS.graphics.clear();
+		ASTEROIDS.aiGraphics.clear();
 
 		myKeyboard.update(elapsedTime);
 		
 		if(scoreText.getScore() >= newLife){
 			lifeArray.push(
-					lives = ASTEROIDS.graphics.Texture( {
+					lives = ASTEROIDS.aiGraphics.Texture( {
 						image : ASTEROIDS.images['images/USU-Logo.png'],
 						center : { x : 450 + (lifeArray.length*75), y : 45 },
 						width : 50, height : 50
@@ -404,7 +346,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 			numAsteroids++;
 			for(var i = 0; i < numAsteroids; i++){
 				asteroidsArray.push(
-					asteroid = ASTEROIDS.graphics.Texture( {
+					asteroid = ASTEROIDS.aiGraphics.Texture( {
 						image : ASTEROIDS.images['images/Asteroid2.png'],
 						center : { x : Random.nextRange(50, ASTEROIDS.screenWidth), y : ASTEROIDS.screenHeight },
 						width : 125, height : 125,
@@ -439,7 +381,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 			if(size === 3){
 				scoreText.updateScore20();
 				for(i = 0; i < 3; i++){
-					asteroidsArray.push(ASTEROIDS.graphics.Texture( {
+					asteroidsArray.push(ASTEROIDS.aiGraphics.Texture( {
 								image : ASTEROIDS.images['images/Asteroid2.png'],
 								center : { x : x, y : y },
 								width : 75, height : 75,
@@ -456,7 +398,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 			if(size === 2){
 				scoreText.updateScore50();
 				for(i = 0; i < 4; i++){
-					asteroidsArray.push(ASTEROIDS.graphics.Texture( {
+					asteroidsArray.push(ASTEROIDS.aiGraphics.Texture( {
 								image : ASTEROIDS.images['images/Asteroid2.png'],
 								center : { x : x, y : y },
 								width : 30, height : 30,
@@ -469,32 +411,39 @@ ASTEROIDS.screens['game-play'] = (function() {
 						);
 				}
 			}
-			//add score for smaller size
+			
 			if(size === 1)
 				scoreText.updateScore100();
 		}
 		//end asteroid hit stuff
 		
-		
-		ufoHit = missile.ufoHit(enemyArray, enemyGunArray);
-		if(ufoHit.hit){
-			explosionAudio.play();
-			var x = ufoHit.x, 
-				y = ufoHit.y;
-			asteroidExplosion.updatePos(ufoHit.x, ufoHit.y);
-			for(var i = 0; i < 10; i++)
-				asteroidExplosion.create();
-			ufoHit = false;
-		}		
-		
 		//update the collisions between asteroid and ship
 		//we should definitely look at putting all of these for loops in functions...
 		if(!shipHit){
 			for(var i = 0; i < asteroidsArray.length; i++){
-				if(collisionDetected(ship, asteroidsArray[i]))
-					explodeShip();
-				if(enemyGunEasy.motherShipHit(ship).shipHit || enemyGunHard.motherShipHit(ship).shipHit)
-					explodeShip();
+				if(collisionDetected(ship, asteroidsArray[i])){
+					shipExplodeAudio.play();
+					lifeArray.pop();
+					if(lifeArray.length == 0){
+						//Game Over and Restart Game
+						ASTEROIDS.game.showScreen('credits');
+						cancelNextRequest = true;
+					}
+					
+					shipExplosion1.updatePos(ship.getX(), ship.getY());
+					shipExplosion2.updatePos(ship.getX(), ship.getY());
+					shipExplosion3.updatePos(ship.getX(), ship.getY());
+					for(var i = 0; i < 200; i++){
+						shipExplosion1.create();
+						if(i%2 === 0){
+							shipExplosion3.create();
+							shipExplosion2.create();
+						}
+						ship.shipHit();
+						shipHit = true;
+						shipInvincible = true;
+					}
+				}
 			}
 		}
 		else{
@@ -511,11 +460,16 @@ ASTEROIDS.screens['game-play'] = (function() {
 			}
 		}
 		
+		//update all 3 ships
+		enemyShipEasy.updateEnemy('easy', elapsedTime);
+		enemyShipHard.updateEnemy('hard', elapsedTime);
+		ship.updatePos();
+
 		//only update thruster specs if the thruster button is hit
 		if(ship.getThrusterStatus()){
 			leftThruster.updatePos(ship.getLeftThrusterPos().x, ship.getLeftThrusterPos().y);
 			rightThruster.updatePos(ship.getRightThrusterPos().x, ship.getRightThrusterPos().y);
-			for(var i = 0; i < 2; i++){
+			for(var i = 0; i < 10; i++){
 				leftThruster.create();
 				rightThruster.create();
 			}
@@ -523,19 +477,10 @@ ASTEROIDS.screens['game-play'] = (function() {
 			ship.setThrusterStatus(false);
 		}
 		
-		//update all 3 ships
-		ship.updatePos();
-		if(enemyGunArray.length > 0){
-			enemyShipEasy.updateEnemy(enemyShipEasy, enemyGunEasy, elapsedTime);
-			enemyShipHard.updateEnemy(enemyShipHard, enemyGunHard, elapsedTime);
-		}
-		
 		//update particle systems
 		leftThruster.update(elapsedTime/1000);
 		rightThruster.update(elapsedTime/1000);
 		missile.update(elapsedTime/1000);
-		enemyGunEasy.update(elapsedTime/1000);
-		enemyGunHard.update(elapsedTime/1000);
 		shipExplosion1.update(elapsedTime/1000);
 		shipExplosion2.update(elapsedTime/1000);
 		shipExplosion3.update(elapsedTime/1000);
@@ -550,7 +495,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		if (hyperCount > 1000){
 			ASTEROIDS.hyperReady = true;
 		}
-		ASTEROIDS.graphics.clear();
+		ASTEROIDS.aiGraphics.clear();
 		
 		for(var i = 0; i < asteroidsArray.length; i++){
 			asteroidsArray[i].draw();
@@ -561,8 +506,10 @@ ASTEROIDS.screens['game-play'] = (function() {
 		
 		//draw all bullet particles
 		missile.render();
-		enemyGunEasy.render();
-		enemyGunHard.render();
+		
+		//draw enemy ships
+		enemyShipEasy.draw();
+		enemyShipHard.draw();
 		
 		//draw ship explosion particles and asteroid explosion
 		shipExplosion1.render();
@@ -571,15 +518,8 @@ ASTEROIDS.screens['game-play'] = (function() {
 		asteroidExplosion.render();
 		hyperExplode.render();
 		
-		//draw enemy ships
-		for(var i = 0; i < enemyArray.length; i++){
-			enemyArray[i].draw();
-		}
-		
 		//draw ship last to make exaust go behind it
 		ship.draw();
-		
-		//scoring text
 		scoreText.drawText();
 		levelText.drawText();
 		levelNumText.drawText();
@@ -610,18 +550,6 @@ ASTEROIDS.screens['game-play'] = (function() {
 		ASTEROIDS.lastTimeStamp = performance.now();
 		//
 		// Start the animation loop
-		if(!ASTEROIDS.customControls){
-			ASTEROIDS.navRight = KeyEvent.DOM_VK_L;
-			ASTEROIDS.navLeft = KeyEvent.DOM_VK_J;
-			ASTEROIDS.navThrust = KeyEvent.DOM_VK_K;
-			ASTEROIDS.shoot = KeyEvent.DOM_VK_Z;
-			ASTEROIDS.hyperSpace = KeyEvent.DOM_VK_H;
-		}
-		myKeyboard.registerCommand(ASTEROIDS.navLeft, ship.rotateLeft);
-		myKeyboard.registerCommand(ASTEROIDS.navRight, ship.rotateRight);
-		myKeyboard.registerCommand(ASTEROIDS.navThrust, ship.fireThrusters);
-		myKeyboard.registerCommand(ASTEROIDS.shoot, fireMissile);
-		myKeyboard.registerCommand(ASTEROIDS.hyperSpace, hyperJump);
 		
 		cancelNextRequest = false;
 		requestAnimationFrame(gameLoop);

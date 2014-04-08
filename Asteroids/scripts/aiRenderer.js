@@ -5,10 +5,10 @@
 //
 // ------------------------------------------------------------------
 
-ASTEROIDS.graphics = (function() {
+ASTEROIDS.aiGraphics = (function() {
 	'use strict';
 	
-	var canvas = document.getElementById('mainCanvas'),
+	var canvas = document.getElementById('aiCanvas'),
 		context = canvas.getContext('2d');
 	ASTEROIDS.screenWidth = canvas.width = window.innerWidth;
 	ASTEROIDS.screenHeight = canvas.height = window.innerHeight;
@@ -30,9 +30,7 @@ ASTEROIDS.graphics = (function() {
 	function Texture(spec) {
 		var that = {};
 		
-		var resetCount = 0,
-			enemyFireCount = 0,
-			rotateCount = 0;
+		var resetCount = 0;
 
 		var wrap = function(){
 			var xMax = ASTEROIDS.screenWidth, yMax = ASTEROIDS.screenHeight;
@@ -230,7 +228,7 @@ ASTEROIDS.graphics = (function() {
 			spec.dy = 0;
 		};
 		
-		that.updatePos = function(){
+		that.updatePos = function(elapsedTime){
 			spec.center.x += spec.dx;
 			spec.center.y += spec.dy;
 			//this is friction, uncomment if friction is wanted
@@ -239,42 +237,21 @@ ASTEROIDS.graphics = (function() {
 			wrap();
 		};
 		
-		that.updateEnemy = function(ship, gun, elapsedTime){
-			//update ship movement
-			spec.center.x += (spec.speed * spec.direction.x);
-			spec.center.y += (spec.speed * spec.direction.y);
-			
-			rotateCount += elapsedTime;
-			enemyFireCount += elapsedTime;
-			
-			gun.updatePos({x: ship.getGunPos().x, y: ship.getGunPos().y}, ship.getRotation());
-			gun.updatePos({x: ship.getGunPos().x, y: ship.getGunPos().y}, ship.getRotation());
-			
-			//what to do with the harder ufo
-			if(spec.diff === 'hard'){
-				//fire n000 seconds
-				if(enemyFireCount >= 1000){
-					gun.create();
-					enemyFireCount = 0;
-				}
-				//rotate ship every so often
-				if(rotateCount >= 100){
+		that.updateEnemy = function(difficulty, elapsedTime){
+			//that.rotateRight(elapsedTime);
+			var randomnumber=Math.floor(Math.random()*4);
+			if(randomnumber === 0)
+				that.fireThrusters(elapsedTime);	
+			else if(randomnumber === 1){
+				for(var i = 0; i<10; i++)
 					that.rotateLeft(elapsedTime);
-					rotateCount = 0;
-				}
 			}
-			if(spec.diff === 'easy'){
-				//fire every n
-				if(enemyFireCount >= 1500){
-					gun.create();
-					enemyFireCount = 0;
-				}
-				if(rotateCount >= 100){
-					that.rotateLeft(elapsedTime);
-					rotateCount = 0;
-				}
+			else if (randomnumber === 2){
+				for(var i = 0; i<10; i++)
+					that.rotateRight(elapsedTime);
 			}
-			wrap();
+			else{}
+			that.updatePos(elapsedTime);
 		};
 		
 		that.moveTo = function(x, y) {
