@@ -28,7 +28,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		numAsteroids = 0,
 		hyperCount = 0,
 		invincibleCount = 0,
-		gameTimer = 0,
+		fightSongTimer = 0,
 		newLife = 10000,
 		currLevelScore = 0,
 		shootAudio = null,
@@ -37,6 +37,7 @@ ASTEROIDS.screens['game-play'] = (function() {
 		explosionAudio = null,
 		shipExplodeAudio = null,
 		hyperAudio = null,
+		fightSong = null,
 		scoreText = null,
 		levelText = null,
 		levelNumText = null,
@@ -277,6 +278,12 @@ ASTEROIDS.screens['game-play'] = (function() {
 			}, ASTEROIDS.graphics
 		);
 		
+		fightSong = audio({
+			sound: 'sounds/Utah_State_Fight_Song.mp3',
+			duration: 0,
+			volume: .3
+		});
+		
 		shootAudio = audio({
 			sound: 'sounds/asteroids_shoot.wav',
 			duration: 0,
@@ -364,6 +371,8 @@ ASTEROIDS.screens['game-play'] = (function() {
 				})
 			);
 		}
+		
+		fightSong.play();
 
 		//
 		// Create the keyboard input handler and register the keyboard commands
@@ -381,9 +390,15 @@ ASTEROIDS.screens['game-play'] = (function() {
 	//
 	function gameUpdate(elapsedTime){
 		ASTEROIDS.graphics.clear();
+		
+		fightSongTimer += elapsedTime;
+		if(fightSongTimer >= 60000){
+			fightSong.play();
+			fightSongTimer = 0;
+		}
 
 		myKeyboard.update(elapsedTime);
-		
+				
 		if(scoreText.getScore() >= newLife){
 			lifeArray.push(
 					lives = ASTEROIDS.graphics.Texture( {
